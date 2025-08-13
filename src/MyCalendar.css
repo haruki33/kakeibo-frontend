@@ -1,0 +1,69 @@
+.react-calendar {
+  border: none;
+  font-family: "Helvetica", sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px; /* ボタンの文字サイズを大きく */
+  color: #333;
+  padding: 8px 16px; /* ボタンのサイズを大きく */
+}
+
+.react-calendar__month-view__weekdays {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #eee;
+  text-align: center;
+}
+
+.react-calendar__tile {
+  aspect-ratio: 1 / 1;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+  background: none;
+}
+
+.date-number {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: #f0f8ff;
+  cursor: pointer;
+}
+
+.react-calendar__tile--now {
+  background: #ffebcd;
+}
+
+.react-calendar__tile--active {
+  background: #87cefa;
+  color: white;
+}
