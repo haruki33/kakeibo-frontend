@@ -34,8 +34,6 @@ export default function TransactionsList({
   const [editTarget, setEditTarget] = useState<Transaction | null>(null);
   // const [loading, setLoading] = useState(true);
 
-  console.log(`transactionsListでのselectedDate ${selectedDate}`);
-
   useEffect(() => {
     // Fetch categories for the dropdown
     fetch("http://localhost:3000/categories")

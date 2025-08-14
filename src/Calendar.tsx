@@ -44,7 +44,6 @@ function MyCalendar({
         activeStartDate.getMonth() + 1
       }`;
       setYearAndMonth(newMonth);
-      console.log("子で選択された月:", newMonth);
     }
   };
 
@@ -54,8 +53,6 @@ function MyCalendar({
         value.getMonth() + 1
       ).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
       setSelectedDate(localStr);
-      console.log("選択された日付:", value); // Dateオブジェクト
-      console.log("YYYY-MM-DD形式:", localStr);
     } else {
       console.log("選択された日付が不正です:", value);
     }

@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 
+type TransactionsFormProps = {
+  transactions: Transaction[];
+  setTransactions: (transactions: Transaction[]) => void;
+  setIsUpdated: (isUpdated: boolean) => void;
+};
+
 type Category = {
   id: string;
   name: string;
@@ -13,12 +19,25 @@ type TransactionForm = {
   memo: string;
 };
 
-export default function TransactionsForm() {
+type Transaction = {
+  id: string;
+  date: string;
+  amount: number;
+  type: string;
+  category_id: string;
+  memo: string;
+};
+
+export default function TransactionsForm({
+  transactions,
+  setTransactions,
+  setIsUpdated,
+}: TransactionsFormProps) {
   const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10)
   );
   const [amount, setAmount] = useState<number>(0);
-  const [type, setType] = useState<string>("income");
+  const [type, setType] = useState<string>("expense");
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -47,6 +66,8 @@ export default function TransactionsForm() {
       memo,
     };
 
+    console.log(`transactions: ${JSON.stringify(transactions)}`);
+
     try {
       const res = await fetch(`http://localhost:3000/transactions`, {
         method: "POST",
@@ -56,14 +77,32 @@ export default function TransactionsForm() {
         body: JSON.stringify(newTransaction),
       });
       if (!res.ok) {
-        throw new Error("Failed to create transaction");
+        const errorText = await res.text();
+        console.error("Response status:", res.status);
+        console.error("Response body:", errorText);
+        throw new Error(
+          `Failed to create transaction: ${res.status} - ${errorText}`
+        );
       }
+
+      const createdTransaction = await res.json();
+      setTransactions([
+        ...transactions,
+        {
+          id: createdTransaction.id,
+          date: newTransaction.date,
+          amount: newTransaction.amount,
+          type: newTransaction.type,
+          category_id: newTransaction.categoryId,
+          memo: newTransaction.memo,
+        },
+      ]);
+      setIsUpdated(true);
 
       // Reset form fields
       setDate(new Date().toISOString().slice(0, 10));
       setAmount(0);
       setType("expense");
-      setCategoryId("");
       setMemo("");
     } catch (error) {
       console.error("Error creating transaction:", error);
