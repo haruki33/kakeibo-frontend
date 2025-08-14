@@ -44,7 +44,7 @@ function MyRegister() {
     <>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 8 }}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Calendar
               setYearAndMonth={setSelectedYearAndMonth}
               setSelectedDate={setSelectedDate}
@@ -52,15 +52,21 @@ function MyRegister() {
               transactions={transactions}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TransactionsList
-              transactions={transactions}
-              setYearAndMonth={setSelectedYearAndMonth}
-              setTransactions={setTransactions}
-              selectedDate={selectedDate}
-              setIsUpdated={setIsUpdated}
-            />
-            <TransactionsForm />
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12 }} sx={{ height: "50dvh" }}>
+                <TransactionsList
+                  transactions={transactions}
+                  setYearAndMonth={setSelectedYearAndMonth}
+                  setTransactions={setTransactions}
+                  selectedDate={selectedDate}
+                  setIsUpdated={setIsUpdated}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }} sx={{ height: "50dvh" }}>
+                <TransactionsForm />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
