@@ -64,7 +64,11 @@ function MyRegister() {
                 />
               </Grid>
               <Grid size={{ xs: 12 }} sx={{ height: "50dvh" }}>
-                <TransactionsForm />
+                <TransactionsForm
+                  transactions={transactions}
+                  setTransactions={setTransactions}
+                  setIsUpdated={setIsUpdated}
+                />
               </Grid>
             </Grid>
           </Grid>
