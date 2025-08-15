@@ -26,26 +26,26 @@ const createRows = ({
   categories: Category[];
   amountPerCategoryPerMonth: AmountPerCategoryPerMonth[];
 }) => {
-  const rows = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const columns = categories.map((category) => category.id);
+  const columns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-  const cells = rows.map((month) => {
-    return columns.map((categoryId) => {
-      const items = amountPerCategoryPerMonth.find(
-        (item) => (
-          console.log(item.month, month, item.category_id, categoryId),
-          item.month === String(month) && item.category_id === categoryId
-        )
+  // Each row is [categoryName, ...amounts for each month]
+  const rows = categories.map((category) => {
+    const amounts = columns.map((month) => {
+      const item = amountPerCategoryPerMonth.find(
+        (entry) =>
+          entry.month === String(month) && entry.category_id === category.id
       );
-      return items ? items.total_amount : 0;
+      return item ? item.total_amount : 0;
     });
+    return [category.name, ...amounts];
   });
-  return cells;
+
+  return rows;
 };
 
 export default function MyTable() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [rows, setRows] = useState<number[][]>([]);
+  const [rows, setRows] = useState<(string | number)[][]>([]);
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,7 +67,6 @@ export default function MyTable() {
       .then((data: AmountPerCategoryPerMonth[]) => {
         setRows(createRows({ categories, amountPerCategoryPerMonth: data }));
       })
-
       .catch((e) => console.error("Failed to fetch categories", e));
   }, [categories]);
 
@@ -76,19 +75,19 @@ export default function MyTable() {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>カテゴリー </TableCell>
-            {categories.map((category) => (
-              <TableCell key={category.id} align="right">
-                {category.name}
+            <TableCell>月</TableCell>
+            {[...Array(12)].map((_, i) => (
+              <TableCell key={i + 1} align="right">
+                {i + 1}月
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, monthIdx) => (
-            <TableRow key={monthIdx}>
-              <TableCell>{monthIdx + 1}月</TableCell>
-              {row.map((cell, cellIdx) => (
+          {rows.map((row, rowIdx) => (
+            <TableRow key={categories[rowIdx]?.id || rowIdx}>
+              <TableCell>{categories[rowIdx]?.name}</TableCell>
+              {row.slice(1).map((cell, cellIdx) => (
                 <TableCell key={cellIdx} align="right">
                   {cell}
                 </TableCell>
