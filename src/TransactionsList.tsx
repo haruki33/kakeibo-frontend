@@ -35,8 +35,8 @@ export default function TransactionsList({
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch categories for the dropdown
-    fetch("http://localhost:3000/categories")
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data: Category[]) => {
         setCategories(data);
@@ -48,7 +48,8 @@ export default function TransactionsList({
     if (!confirm("本当に削除しますか？")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/transactions/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/transactions/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete transaction");

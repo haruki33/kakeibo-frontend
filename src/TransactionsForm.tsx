@@ -44,8 +44,8 @@ export default function TransactionsForm({
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    // Fetch categories for the dropdown
-    fetch("http://localhost:3000/categories")
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data: Category[]) => {
         setCategories(data);
@@ -69,7 +69,8 @@ export default function TransactionsForm({
     console.log(`transactions: ${JSON.stringify(transactions)}`);
 
     try {
-      const res = await fetch(`http://localhost:3000/transactions`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/transactions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

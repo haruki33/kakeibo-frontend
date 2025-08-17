@@ -11,7 +11,8 @@ export default function CategoriesList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/categories")
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
@@ -27,7 +28,8 @@ export default function CategoriesList() {
     if (!confirm("本当に削除しますか？")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/categories/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/categories/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete category");

@@ -34,8 +34,8 @@ const TransactionsEditModal = ({
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    // Fetch categories for the dropdown
-    fetch("http://localhost:3000/categories")
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data: Category[]) => {
         setCategories(data);
@@ -46,7 +46,8 @@ const TransactionsEditModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:3000/transactions/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/transactions/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date, amount, type, categoryId, memo }),

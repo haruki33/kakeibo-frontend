@@ -49,8 +49,8 @@ export default function MyTable() {
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch categories for the dropdown
-    fetch("http://localhost:3000/categories")
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data: Category[]) => {
         setCategories(data);
@@ -59,10 +59,8 @@ export default function MyTable() {
   }, []);
 
   useEffect(() => {
-    // Fetch categories for the dropdown
-    fetch(
-      `http://localhost:3000/transactions/summary?year=${new Date().getFullYear()}`
-    )
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/transactions/summary?year=${new Date().getFullYear()}`)
       .then((res) => res.json())
       .then((data: AmountPerCategoryPerMonth[]) => {
         setRows(createRows({ categories, amountPerCategoryPerMonth: data }));

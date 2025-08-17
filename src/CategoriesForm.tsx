@@ -26,7 +26,8 @@ export default function TransactionsForm() {
     };
 
     try {
-      const res = await fetch(`http://localhost:3000/categories`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

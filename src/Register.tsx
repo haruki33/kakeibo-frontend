@@ -26,7 +26,8 @@ function MyRegister() {
   const [isUpdated, setIsUpdated] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/transactions?month=${selectedYearAndMonth}`)
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("fetched transactions:", data);
