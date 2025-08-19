@@ -1,30 +1,28 @@
 import { useEffect, useState } from "react";
 
+import CategoriesEditModal from "./CategoriesEditModal";
+
 type Category = {
-  id: number;
+  id: string;
   name: string;
+  color: string;
   type: string;
 };
 
-export default function CategoriesList() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+type categoriesListProps = {
+  categories: Category[];
+};
+
+export default function CategoriesList({ categories }: categoriesListProps) {
+  const [localCategories, setLocalCategories] =
+    useState<Category[]>(categories);
+  const [editTarget, setEditTarget] = useState<Category | null>(null);
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCategories(data);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.error("Failed to fetch categories", e);
-        setLoading(false);
-      });
-  }, []);
+    setLocalCategories(categories);
+  }, [categories]);
 
-  const deleteCategory = async (id: number) => {
+  const deleteCategory = async (id: string) => {
     if (!confirm("本当に削除しますか？")) return;
 
     try {
@@ -34,25 +32,40 @@ export default function CategoriesList() {
       });
       if (!res.ok) throw new Error("Failed to delete category");
 
-      setCategories((cats) => cats.filter((cat) => cat.id !== id));
+      setLocalCategories((cats) => cats.filter((cat) => cat.id !== id));
     } catch (error) {
       console.error("Error deleting category:", error);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-
   return (
     <div>
       <h2>カテゴリ一覧</h2>
       <ul>
-        {categories.map((cat) => (
+        {localCategories.map((cat) => (
           <li key={cat.id}>
             {cat.name} ({cat.type})
             <button onClick={() => deleteCategory(cat.id)}>削除</button>
+            <button onClick={() => setEditTarget(cat)}>編集</button>
           </li>
         ))}
       </ul>
+
+      {editTarget && (
+        <CategoriesEditModal
+          id={editTarget.id}
+          currentName={editTarget.name}
+          currentColor={editTarget.color}
+          currentType={editTarget.type}
+          onClose={() => setEditTarget(null)}
+          onUpdated={() => {
+            setEditTarget(null);
+            setLocalCategories((cats) =>
+              cats.filter((cat) => cat.id !== editTarget.id)
+            );
+          }}
+        />
+      )}
     </div>
   );
 }

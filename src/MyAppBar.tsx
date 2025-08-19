@@ -16,11 +16,11 @@ import MenuItem from "@mui/material/MenuItem";
 const pageRoutes = {
   登録: "/",
   表: "/MyTable",
-  // 設定: "/settings",
+  設定: "/setting",
 } as const;
 
 type PageKey = keyof typeof pageRoutes;
-const pages: PageKey[] = ["登録", "表"];
+const pages: PageKey[] = ["登録", "表", "設定"];
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
