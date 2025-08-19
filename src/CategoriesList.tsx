@@ -53,15 +53,18 @@ export default function CategoriesList({ categories }: categoriesListProps) {
 
       {editTarget && (
         <CategoriesEditModal
+          localCategories={localCategories}
           id={editTarget.id}
           currentName={editTarget.name}
           currentColor={editTarget.color}
           currentType={editTarget.type}
           onClose={() => setEditTarget(null)}
-          onUpdated={() => {
+          onUpdated={(updatedCategory) => {
             setEditTarget(null);
             setLocalCategories((cats) =>
-              cats.filter((cat) => cat.id !== editTarget.id)
+              cats.map((cat) =>
+                cat.id === editTarget.id ? updatedCategory : cat
+              )
             );
           }}
         />

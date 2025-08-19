@@ -9,10 +9,14 @@ type Category = {
 };
 
 type CategoriesFormProps = {
+  categories: Category[];
   addCategories: (category: Category) => void;
 };
 
-export default function CategoriesForm({ addCategories }: CategoriesFormProps) {
+export default function CategoriesForm({
+  categories,
+  addCategories,
+}: CategoriesFormProps) {
   const [name, setName] = useState<string>("給料");
   const [color, setColor] = useState<string>("#ff7f50");
   const [type, setType] = useState<string>("income");
@@ -21,6 +25,12 @@ export default function CategoriesForm({ addCategories }: CategoriesFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    if (categories.some((cat) => cat.name === name)) {
+      alert("同じ名前のカテゴリが存在します");
+      setLoading(false);
+      return;
+    }
 
     const newCategory: Category = {
       id: uuidv4(),
