@@ -33,7 +33,7 @@ function Setting() {
   return (
     <>
       <CategoriesList categories={categories} />
-      <CategoriesForm addCategories={addCategories} />
+      <CategoriesForm categories={categories} addCategories={addCategories} />
     </>
   );
 }

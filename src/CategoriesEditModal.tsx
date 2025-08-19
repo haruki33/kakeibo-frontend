@@ -1,15 +1,24 @@
 import React, { useState } from "react";
 
+type Category = {
+  id: string;
+  name: string;
+  color: string;
+  type: string;
+};
+
 type CategoryProps = {
+  localCategories: Category[];
   id: string;
   currentName: string;
   currentColor: string;
   currentType: string;
   onClose: () => void;
-  onUpdated: () => void;
+  onUpdated: (updatedCategory: Category) => void;
 };
 
 const CategoriesEditModal = ({
+  localCategories,
   id,
   currentName,
   currentColor,
@@ -21,19 +30,25 @@ const CategoriesEditModal = ({
   const [color, setColor] = useState(currentColor);
   const [type, setType] = useState(currentType);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (localCategories.some((cat) => cat.name === name)) {
+      alert("同じ名前のカテゴリが存在します");
+      // setLoading(false);
+      return;
+    }
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({id, name, color, type}),
+        body: JSON.stringify({ name, color, type }),
       });
       if (!res.ok) throw new Error("更新失敗");
 
-      onUpdated();
+      const updatedCategory = { id, name, color, type };
+      onUpdated(updatedCategory);
       onClose();
     } catch (err) {
       console.error(err);
