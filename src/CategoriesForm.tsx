@@ -8,7 +8,11 @@ type Category = {
   type: string;
 };
 
-export default function TransactionsForm() {
+type CategoriesFormProps = {
+  addCategories: (category: Category) => void;
+};
+
+export default function CategoriesForm({ addCategories }: CategoriesFormProps) {
   const [name, setName] = useState<string>("給料");
   const [color, setColor] = useState<string>("#ff7f50");
   const [type, setType] = useState<string>("income");
@@ -38,7 +42,7 @@ export default function TransactionsForm() {
         throw new Error("Failed to create category");
       }
 
-      // Reset form fields
+      addCategories(newCategory);
       setName("給料");
       setColor("#ff7f50");
       setType("income");
