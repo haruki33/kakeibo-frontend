@@ -16,6 +16,18 @@ function Setting() {
     setCategories((prev: Category[]) => [...prev, newCategories]);
   };
 
+  const deleteCategories = (categoryId: string) => {
+    setCategories((prev: Category[]) =>
+      prev.filter((cat) => cat.id !== categoryId)
+    );
+  };
+
+  const updatedCategory = (updatedCategory: Category) => {
+    setCategories((prev: Category[]) =>
+      prev.map((cat) => (cat.id === updatedCategory.id ? updatedCategory : cat))
+    );
+  };
+
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     fetch(`${baseUrl}/categories`)
@@ -32,7 +44,11 @@ function Setting() {
 
   return (
     <>
-      <CategoriesList categories={categories} />
+      <CategoriesList
+        categories={categories}
+        deleteCategories={deleteCategories}
+        updateCategories={updatedCategory}
+      />
       <CategoriesForm categories={categories} addCategories={addCategories} />
     </>
   );

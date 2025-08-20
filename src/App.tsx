@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MyAppBar from "./MyAppBar.tsx";
-import MyRegister from "./Register.tsx";
+import MyRegister from "./MyRegister.tsx";
 import MyTable from "./MyTable";
 import Setting from "./Setting";
 

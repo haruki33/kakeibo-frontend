@@ -3,15 +3,16 @@ import TransactionsEditModal from "./TransactionsEditModal";
 
 type TransactionsListProps = {
   transactions: Transaction[];
-  setYearAndMonth: (month: string) => void;
-  setTransactions: (transactions: Transaction[]) => void;
-  setIsUpdated: (isUpdated: boolean) => void;
   selectedDate: string;
+  deleteTransaction: (id: string) => void;
+  updateTransaction: (updatedTransaction: Transaction) => void;
 };
 
 type Category = {
   id: string;
   name: string;
+  type: string;
+  color: string;
 };
 
 type Transaction = {
@@ -25,14 +26,12 @@ type Transaction = {
 
 export default function TransactionsList({
   transactions,
-  setYearAndMonth,
-  setTransactions,
-  setIsUpdated,
   selectedDate,
+  deleteTransaction,
+  updateTransaction,
 }: TransactionsListProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editTarget, setEditTarget] = useState<Transaction | null>(null);
-  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -44,7 +43,7 @@ export default function TransactionsList({
       .catch((e) => console.error("Failed to fetch categories", e));
   }, []);
 
-  const deleteTransaction = async (id: string) => {
+  const deleteTransactionOnList = async (id: string) => {
     if (!confirm("本当に削除しますか？")) return;
 
     try {
@@ -54,20 +53,11 @@ export default function TransactionsList({
       });
       if (!res.ok) throw new Error("Failed to delete transaction");
 
-      setTransactions(transactions.filter((tx) => tx.id !== id));
-      setIsUpdated(true);
+      deleteTransaction(id);
     } catch (error) {
       console.error("Error deleting transaction:", error);
     }
   };
-
-  // if (loading)
-  //   return (
-  //     <>
-  //       <h2>取引一覧</h2>
-  //       <p>Loading...</p>
-  //     </>
-  //   );
 
   return (
     <div>
@@ -84,7 +74,9 @@ export default function TransactionsList({
                 日付：{tx.date}, カテゴリ：
                 {categories.find((c) => c.id === tx.category_id)?.name} - 価格：
                 {tx.amount}円 - メモ：{tx.memo}
-                <button onClick={() => deleteTransaction(tx.id)}>削除</button>
+                <button onClick={() => deleteTransactionOnList(tx.id)}>
+                  削除
+                </button>
                 <button onClick={() => setEditTarget(tx)}>編集</button>
               </li>
             ))
@@ -92,6 +84,7 @@ export default function TransactionsList({
 
         {editTarget && (
           <TransactionsEditModal
+            categories={categories}
             id={editTarget.id}
             currentDate={editTarget.date.slice(0, 10)}
             currentAmount={editTarget.amount}
@@ -99,10 +92,9 @@ export default function TransactionsList({
             currentCategoryId={editTarget.category_id}
             currentMemo={editTarget.memo}
             onClose={() => setEditTarget(null)}
-            onUpdated={() => {
+            onUpdated={(updatedTransaction) => {
               setEditTarget(null);
-              setIsUpdated(true);
-              setYearAndMonth(selectedDate.slice(0, 7));
+              updateTransaction(updatedTransaction);
             }}
           />
         )}

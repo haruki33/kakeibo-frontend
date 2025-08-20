@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 type Category = {
   id: string;
   name: string;
+  type: string;
+  color: string;
+};
+
+type Transaction = {
+  id: string;
+  date: string;
+  amount: number;
+  type: string;
+  category_id: string;
+  memo: string;
 };
 
 type TransactionsEditModalProps = {
+  categories: Category[];
   id: string;
   currentDate: string;
   currentAmount: number;
@@ -13,10 +25,11 @@ type TransactionsEditModalProps = {
   currentCategoryId: string;
   currentMemo: string;
   onClose: () => void;
-  onUpdated: () => void;
+  onUpdated: (updatedTransaction: Transaction) => void;
 };
 
 const TransactionsEditModal = ({
+  categories,
   id,
   currentDate,
   currentAmount,
@@ -31,17 +44,6 @@ const TransactionsEditModal = ({
   const [type, setType] = useState(currentType);
   const [categoryId, setCategoryId] = useState(currentCategoryId);
   const [memo, setMemo] = useState(currentMemo);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
-      .then((data: Category[]) => {
-        setCategories(data);
-      })
-      .catch((e) => console.error("Failed to fetch categories", e));
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +56,8 @@ const TransactionsEditModal = ({
       });
       if (!res.ok) throw new Error("更新失敗");
 
-      onUpdated();
+      const updatedTransaction = await res.json();
+      onUpdated(updatedTransaction);
       onClose();
     } catch (err) {
       console.error(err);

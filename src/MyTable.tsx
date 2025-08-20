@@ -87,14 +87,6 @@ export default function MyTable() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [rowsIncome, setRowsIncome] = useState<(string | number)[][]>([]);
   const [rowsExpense, setRowsExpense] = useState<(string | number)[][]>([]);
-  // const [incomeTotalsPerMonth, setIncomeTotalsPerMonth] = useState<
-  //   (string | number)[]
-  // >([]);
-  // const [expenseTotalsPerMonth, setExpenseTotalsPerMonth] = useState<
-  //   (string | number)[]
-  // >([]);
-  // const [BOP, setBOP] = useState<number[]>([]);
-  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;

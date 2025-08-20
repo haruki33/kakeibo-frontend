@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-
-type TransactionsFormProps = {
-  transactions: Transaction[];
-  setTransactions: (transactions: Transaction[]) => void;
-  setIsUpdated: (isUpdated: boolean) => void;
-};
+import React, { useState } from "react";
 
 type Category = {
   id: string;
   name: string;
+  type: string;
+  color: string;
+};
+
+type TransactionsFormProps = {
+  addTransaction: (newTransaction: Transaction) => void;
+  categories: Category[];
 };
 
 type TransactionForm = {
@@ -29,9 +30,8 @@ type Transaction = {
 };
 
 export default function TransactionsForm({
-  transactions,
-  setTransactions,
-  setIsUpdated,
+  addTransaction,
+  categories,
 }: TransactionsFormProps) {
   const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10)
@@ -41,18 +41,6 @@ export default function TransactionsForm({
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
-      .then((data: Category[]) => {
-        setCategories(data);
-        setCategoryId(data.length > 0 ? data[0].id : "");
-      })
-      .catch((e) => console.error("Failed to fetch categories", e));
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,8 +53,6 @@ export default function TransactionsForm({
       categoryId,
       memo,
     };
-
-    console.log(`transactions: ${JSON.stringify(transactions)}`);
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -87,18 +73,7 @@ export default function TransactionsForm({
       }
 
       const createdTransaction = await res.json();
-      setTransactions([
-        ...transactions,
-        {
-          id: createdTransaction.id,
-          date: newTransaction.date,
-          amount: newTransaction.amount,
-          type: newTransaction.type,
-          category_id: newTransaction.categoryId,
-          memo: newTransaction.memo,
-        },
-      ]);
-      setIsUpdated(true);
+      addTransaction(createdTransaction);
 
       // Reset form fields
       setDate(new Date().toISOString().slice(0, 10));

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import CategoriesEditModal from "./CategoriesEditModal";
 
@@ -11,16 +11,22 @@ type Category = {
 
 type categoriesListProps = {
   categories: Category[];
+  deleteCategories: (categoryId: string) => void;
+  updateCategories: (category: Category) => void;
 };
 
-export default function CategoriesList({ categories }: categoriesListProps) {
-  const [localCategories, setLocalCategories] =
-    useState<Category[]>(categories);
+export default function CategoriesList({
+  categories,
+  deleteCategories,
+  updateCategories,
+}: categoriesListProps) {
+  // const [localCategories, setLocalCategories] =
+  //   useState<Category[]>(categories);
   const [editTarget, setEditTarget] = useState<Category | null>(null);
 
-  useEffect(() => {
-    setLocalCategories(categories);
-  }, [categories]);
+  // useEffect(() => {deleteCategories
+  //   setLocalCategories(categories);
+  // }, [categories]);
 
   const deleteCategory = async (id: string) => {
     if (!confirm("本当に削除しますか？")) return;
@@ -32,7 +38,7 @@ export default function CategoriesList({ categories }: categoriesListProps) {
       });
       if (!res.ok) throw new Error("Failed to delete category");
 
-      setLocalCategories((cats) => cats.filter((cat) => cat.id !== id));
+      deleteCategories(id);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -42,7 +48,7 @@ export default function CategoriesList({ categories }: categoriesListProps) {
     <div>
       <h2>カテゴリ一覧</h2>
       <ul>
-        {localCategories.map((cat) => (
+        {categories.map((cat) => (
           <li key={cat.id}>
             {cat.name} ({cat.type})
             <button onClick={() => deleteCategory(cat.id)}>削除</button>
@@ -53,19 +59,15 @@ export default function CategoriesList({ categories }: categoriesListProps) {
 
       {editTarget && (
         <CategoriesEditModal
-          localCategories={localCategories}
+          categories={categories}
           id={editTarget.id}
           currentName={editTarget.name}
           currentColor={editTarget.color}
           currentType={editTarget.type}
           onClose={() => setEditTarget(null)}
           onUpdated={(updatedCategory) => {
+            updateCategories(updatedCategory);
             setEditTarget(null);
-            setLocalCategories((cats) =>
-              cats.map((cat) =>
-                cat.id === editTarget.id ? updatedCategory : cat
-              )
-            );
           }}
         />
       )}

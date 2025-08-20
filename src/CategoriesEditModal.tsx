@@ -8,7 +8,7 @@ type Category = {
 };
 
 type CategoryProps = {
-  localCategories: Category[];
+  categories: Category[];
   id: string;
   currentName: string;
   currentColor: string;
@@ -18,7 +18,7 @@ type CategoryProps = {
 };
 
 const CategoriesEditModal = ({
-  localCategories,
+  categories,
   id,
   currentName,
   currentColor,
@@ -33,7 +33,7 @@ const CategoriesEditModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (localCategories.some((cat) => cat.name === name)) {
+    if (categories.some((cat) => cat.name === name)) {
       alert("同じ名前のカテゴリが存在します");
       // setLoading(false);
       return;
