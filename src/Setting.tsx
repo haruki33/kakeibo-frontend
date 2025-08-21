@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CategoriesForm from "./CategoriesForm";
 import CategoriesList from "./CategoriesList";
+import { Card, Stack } from "@chakra-ui/react";
 
 type Category = {
   id: string;
@@ -34,22 +35,39 @@ function Setting() {
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
-        // setLoading(false);
       })
       .catch((e) => {
         console.error("Failed to fetch categories", e);
-        // setLoading(false);
       });
   }, []);
 
   return (
     <>
-      <CategoriesList
-        categories={categories}
-        deleteCategories={deleteCategories}
-        updateCategories={updatedCategory}
-      />
-      <CategoriesForm categories={categories} addCategories={addCategories} />
+      <Stack gap="4" direction="row">
+        <Card.Root variant="outline">
+          <Card.Header>
+            <Card.Title>カテゴリー一覧</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <CategoriesList
+              categories={categories}
+              deleteCategories={deleteCategories}
+              updateCategories={updatedCategory}
+            />
+          </Card.Body>
+        </Card.Root>
+        <Card.Root variant="outline">
+          <Card.Header>
+            <Card.Title>カテゴリー追加</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <CategoriesForm
+              categories={categories}
+              addCategories={addCategories}
+            />
+          </Card.Body>
+        </Card.Root>
+      </Stack>
     </>
   );
 }
