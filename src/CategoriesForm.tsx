@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Button,
+  createListCollection,
+  Field,
+  Input,
+  Portal,
+  Select,
+  Stack,
+} from "@chakra-ui/react";
 
 type Category = {
   id: string;
@@ -67,39 +76,66 @@ export default function CategoriesForm({
 
   return (
     <div>
-      <h2>カテゴリ登録</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          名前:
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          色:
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          種類:
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            required
-          >
-            <option value="income">収入</option>
-            <option value="expense">支出</option>
-          </select>
-        </label>
-        <button type="submit">登録</button>
+        <Stack gap="4" w="full">
+          <Field.Root>
+            <Field.Label>項目名</Field.Label>
+            <Input
+              variant="outline"
+              placeholder={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <Field.Label>色</Field.Label>
+            <Input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              required
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <Select.Root collection={types} defaultValue={["income"]}>
+              <Select.HiddenSelect />
+              <Select.Label>種類</Select.Label>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="収入" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Portal>
+                <Select.Positioner>
+                  <Select.Content>
+                    {types.items.map((type) => (
+                      <Select.Item item={type} key={type.value}>
+                        {type.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+            </Select.Root>
+          </Field.Root>
+          <Button colorPalette="green" type="submit">
+            登録
+          </Button>
+        </Stack>
       </form>
     </div>
   );
 }
+
+const types = createListCollection({
+  items: [
+    { value: "income", label: "収入" },
+    { value: "expense", label: "支出" },
+  ],
+});
