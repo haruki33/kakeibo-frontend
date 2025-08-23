@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   CloseButton,
@@ -53,19 +53,19 @@ export default function TransactionsList({
     items: categories.map((category) => ({
       value: category.id,
       label: category.name,
+      type: category.type,
     })),
   });
 
-  const types = createListCollection({
-    items: [
-      { value: "income", label: "収入" },
-      { value: "expense", label: "支出" },
-    ],
-  });
+  function handleEditClick(tx: Transaction) {
+    setEditTarget(tx);
+    setIsDialogOpen(true);
+  }
 
-  useEffect(() => {
-    console.log(transactions);
-  }, [transactions]);
+  function handleDialogClose() {
+    setEditTarget(null);
+    setIsDialogOpen(false);
+  }
 
   const deleteTransactionOnList = async (id: string) => {
     if (!confirm("本当に削除しますか？")) return;
@@ -149,114 +149,98 @@ export default function TransactionsList({
                       <AiFillDelete />
                     </IconButton>
 
-                    <Dialog.Root
-                      open={isDialogOpen}
-                      onOpenChange={(details) => {
-                        setIsDialogOpen(details.open);
-                        if (details.open) {
-                          setEditTarget(tx);
-                        } else {
-                          setEditTarget(null);
-                        }
-                      }}
+                    <IconButton
+                      color="green"
+                      variant="ghost"
+                      onClick={() => handleEditClick(tx)}
                     >
-                      <Dialog.Trigger asChild>
-                        <IconButton color="green" variant="ghost">
-                          <AiFillEdit />
-                        </IconButton>
-                      </Dialog.Trigger>
-
-                      <Portal>
-                        <Dialog.Backdrop />
-                        <Dialog.Positioner>
-                          <Dialog.Content>
-                            <Dialog.CloseTrigger asChild>
-                              <CloseButton />
-                            </Dialog.CloseTrigger>
-                            <Dialog.Header>
-                              <Dialog.Title>記録の変更</Dialog.Title>
-                            </Dialog.Header>
-                            <Dialog.Body>
-                              <VStack>
-                                <Field.Root>
-                                  <Field.Label>日付</Field.Label>
-                                  <Input
-                                    type="date"
-                                    value={
-                                      editTarget
-                                        ? editTarget.date.slice(0, 10)
-                                        : undefined
-                                    }
-                                    onChange={(e) =>
-                                      setEditTarget((prev) =>
-                                        prev
-                                          ? { ...prev, date: e.target.value }
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </Field.Root>
-
-                                <Field.Root>
-                                  <DialogCategoriesSelect />
-                                </Field.Root>
-
-                                <Field.Root>
-                                  <Field.Label>金額</Field.Label>
-                                  <Input
-                                    type="number"
-                                    value={editTarget ? editTarget.amount : ""}
-                                    onChange={(e) =>
-                                      setEditTarget((prev) =>
-                                        prev
-                                          ? {
-                                              ...prev,
-                                              amount: Number(e.target.value),
-                                            }
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </Field.Root>
-
-                                <Field.Root>
-                                  <Field.Label>メモ</Field.Label>
-                                  <Input
-                                    type="text"
-                                    value={editTarget ? editTarget.memo : ""}
-                                    onChange={(e) =>
-                                      setEditTarget((prev) =>
-                                        prev
-                                          ? { ...prev, memo: e.target.value }
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </Field.Root>
-
-                                <Field.Root>
-                                  <DialogSelect />
-                                </Field.Root>
-                              </VStack>
-                            </Dialog.Body>
-                            <Dialog.Footer>
-                              <Button
-                                colorPalette="green"
-                                onClick={(e) => handleSubmit(e)}
-                              >
-                                保存
-                              </Button>
-                            </Dialog.Footer>
-                          </Dialog.Content>
-                        </Dialog.Positioner>
-                      </Portal>
-                    </Dialog.Root>
+                      <AiFillEdit />
+                    </IconButton>
                   </Table.Cell>
                 </Table.Row>
               ))}
           </Table.Body>
         )}
       </Table.Root>
+
+      <Dialog.Root
+        open={isDialogOpen}
+        onOpenChange={(details) => {
+          if (!details.open) {
+            handleDialogClose();
+          }
+        }}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton />
+              </Dialog.CloseTrigger>
+              <Dialog.Header>
+                <Dialog.Title>記録の変更</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack>
+                  <Field.Root>
+                    <Field.Label>日付</Field.Label>
+                    <Input
+                      type="date"
+                      value={editTarget ? editTarget.date.slice(0, 10) : ""}
+                      onChange={(e) =>
+                        setEditTarget((prev) =>
+                          prev ? { ...prev, date: e.target.value } : null
+                        )
+                      }
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <DialogCategoriesSelect />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>金額</Field.Label>
+                    <Input
+                      type="number"
+                      value={editTarget ? editTarget.amount : ""}
+                      onChange={(e) =>
+                        setEditTarget((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                amount: Number(e.target.value),
+                              }
+                            : null
+                        )
+                      }
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>メモ</Field.Label>
+                    <Input
+                      type="text"
+                      value={editTarget ? editTarget.memo : ""}
+                      onChange={(e) =>
+                        setEditTarget((prev) =>
+                          prev ? { ...prev, memo: e.target.value } : null
+                        )
+                      }
+                    />
+                  </Field.Root>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+                  保存
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </div>
   );
 
@@ -265,12 +249,14 @@ export default function TransactionsList({
       <Select.Root
         collection={categoriesCollection}
         size="sm"
-        onValueChange={(e) =>
+        onValueChange={(e) => {
           setEditTarget((prev) =>
-            prev ? { ...prev, categoryId: e.value[0] } : null
-          )
-        }
-        defaultValue={editTarget ? [editTarget.categoryId] : []}
+            prev
+              ? { ...prev, categoryId: e.value[0], type: e.items[0].type }
+              : null
+          );
+        }}
+        value={editTarget ? [editTarget.categoryId] : []}
       >
         <Select.HiddenSelect />
         <Select.Label>カテゴリー選択</Select.Label>
@@ -285,39 +271,6 @@ export default function TransactionsList({
         <Select.Positioner>
           <Select.Content>
             {categoriesCollection.items.map((item) => (
-              <Select.Item item={item} key={item.value}>
-                {item.label}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Select.Root>
-    );
-  }
-
-  function DialogSelect() {
-    return (
-      <Select.Root
-        collection={types}
-        size="sm"
-        onValueChange={(e) =>
-          setEditTarget((prev) => (prev ? { ...prev, type: e.value[0] } : null))
-        }
-        defaultValue={editTarget ? [editTarget.type] : []}
-      >
-        <Select.HiddenSelect />
-        <Select.Label>収支選択</Select.Label>
-        <Select.Control>
-          <Select.Trigger>
-            <Select.ValueText placeholder="選択" />
-          </Select.Trigger>
-          <Select.IndicatorGroup>
-            <Select.Indicator />
-          </Select.IndicatorGroup>
-        </Select.Control>
-        <Select.Positioner>
-          <Select.Content>
-            {types.items.map((item) => (
               <Select.Item item={item} key={item.value}>
                 {item.label}
               </Select.Item>
