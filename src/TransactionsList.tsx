@@ -117,7 +117,11 @@ export default function TransactionsList({
               .map((tx) => (
                 <Table.Row key={tx.id}>
                   <Table.Cell textAlign={"left"}>
-                    <Text textStyle="md" fontWeight="medium">
+                    <Text
+                      textStyle="md"
+                      fontWeight="medium"
+                      color={tx.type === "income" ? "#60A5FA" : "#F87171"}
+                    >
                       {categories.find((c) => c.id === tx.categoryId)?.name}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
@@ -127,7 +131,7 @@ export default function TransactionsList({
                   <Table.Cell>{tx.amount}円</Table.Cell>
                   <Table.Cell textAlign={"right"}>
                     <IconButton
-                      color="red"
+                      color="#F87171"
                       variant="ghost"
                       onClick={() => deleteTransactionOnList(tx.id)}
                     >
