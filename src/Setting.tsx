@@ -38,7 +38,18 @@ function Setting() {
 
   return (
     <>
-      <Stack gap="4" direction="row">
+      <Stack gap="4" p="4" direction="column" maxW="800px" mx="auto">
+        <Card.Root variant="outline">
+          <Card.Header>
+            <Card.Title>カテゴリー追加</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <CategoriesForm
+              categories={categories}
+              addCategories={addCategories}
+            />
+          </Card.Body>
+        </Card.Root>
         <Card.Root variant="outline">
           <Card.Header>
             <Card.Title>カテゴリー一覧</Card.Title>
@@ -48,17 +59,6 @@ function Setting() {
               categories={categories}
               deleteCategories={deleteCategories}
               updateCategories={updatedCategory}
-            />
-          </Card.Body>
-        </Card.Root>
-        <Card.Root variant="outline">
-          <Card.Header>
-            <Card.Title>カテゴリー追加</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <CategoriesForm
-              categories={categories}
-              addCategories={addCategories}
             />
           </Card.Body>
         </Card.Root>

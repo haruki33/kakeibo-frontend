@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Calendar from "./Calendar.tsx";
 import TransactionsList from "./TransactionsList.tsx";
 import TransactionsForm from "./TransactionsForm.tsx";
-import { Button, Card, Dialog, Stack, VStack } from "@chakra-ui/react";
+import { Box, Button, Card, Dialog, Stack, VStack } from "@chakra-ui/react";
 
 import type { Category, Transaction } from "./components/types/myregister.ts";
 
@@ -61,8 +61,18 @@ function MyRegister() {
 
   return (
     <>
-      <Stack direction={{ base: "column", md: "row" }}>
-        <Card.Root h="80vh" w="60vw" m="20px">
+      <Stack
+        direction={{ base: "column", md: "row" }}
+        gap="4"
+        p="4"
+        w="full"
+        justify="center"
+      >
+        <Card.Root
+          h={{ base: "50vh", md: "80vh" }}
+          w={{ base: "full", md: "60vw" }}
+          minH="400px"
+        >
           <Calendar
             setYearAndMonth={setSelectedYearAndMonth}
             setSelectedDate={setSelectedDate}
@@ -71,32 +81,39 @@ function MyRegister() {
           />
         </Card.Root>
         <VStack>
-          <Card.Root h="80vh" w="30vw" m="20px">
+          <Card.Root
+            h={{ base: "50vh", md: "80vh" }}
+            w={{ base: "full", md: "30vw" }}
+            minH="400px"
+            flex="1"
+          >
             <Card.Body>
               <Card.Title>お金の記録</Card.Title>
-              <TransactionsList
-                categories={categories}
-                transactions={transactions}
-                selectedDate={selectedDate}
-                deleteTransaction={deleteTransaction}
-                updateTransaction={updatedTransaction}
-              />
-            </Card.Body>
-            <Card.Footer>
-              <Dialog.Root
-                open={isDialogOpen}
-                onOpenChange={(details) => setIsDialogOpen(details.open)}
-              >
-                <Dialog.Trigger asChild>
-                  <Button variant="outline">新しい取引を追加</Button>
-                </Dialog.Trigger>
-                <TransactionsForm
+              <Box maxH={{ base: "30vh", md: "400px" }} overflowY="auto">
+                <TransactionsList
                   categories={categories}
-                  addTransaction={addTransaction}
-                  setIsDialogOpen={setIsDialogOpen}
+                  transactions={transactions}
+                  selectedDate={selectedDate}
+                  deleteTransaction={deleteTransaction}
+                  updateTransaction={updatedTransaction}
                 />
-              </Dialog.Root>
-            </Card.Footer>
+              </Box>
+            </Card.Body>
+            <Dialog.Root
+              open={isDialogOpen}
+              onOpenChange={(details) => setIsDialogOpen(details.open)}
+            >
+              <Dialog.Trigger asChild>
+                <Button m="4" colorPalette="green" variant="solid">
+                  新しい取引を追加
+                </Button>
+              </Dialog.Trigger>
+              <TransactionsForm
+                categories={categories}
+                addTransaction={addTransaction}
+                setIsDialogOpen={setIsDialogOpen}
+              />
+            </Dialog.Root>
           </Card.Root>
         </VStack>
       </Stack>
