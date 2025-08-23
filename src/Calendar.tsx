@@ -72,11 +72,19 @@ function MyCalendar({
       );
 
       if (txs.length > 0) {
+        const displayTxs = txs.slice(0, 5);
         return (
           <>
-            {txs.map((tx) => (
-              <div key={tx.id}>{tx.amount}円</div>
-            ))}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "2px" }}>
+              {displayTxs.map((tx) => (
+                <div
+                  key={tx.id}
+                  style={{ color: tx.type === "income" ? "blue" : "red" }}
+                >
+                  ●
+                </div>
+              ))}
+            </div>
           </>
         );
       }
