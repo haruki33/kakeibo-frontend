@@ -60,8 +60,8 @@ export default function CategoriesList({
       return;
     }
 
-    if (categories.some((cat) => cat.name === editTarget.name)) {
-      alert("同じ名前のカテゴリが存在します");
+    if (categories.some((cat) => cat.id === editTarget.id)) {
+      alert("同じIDのカテゴリが存在します");
       return;
     }
     try {
@@ -90,7 +90,7 @@ export default function CategoriesList({
         {categories.map((cat) => (
           <Box key={cat.id}>
             <HStack>
-              {cat.name} ({cat.type})
+              {cat.name}
               <HStack flex={1} justify="flex-end">
                 <Dialog.Root
                   onOpenChange={(open) =>

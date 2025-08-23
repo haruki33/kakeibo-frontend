@@ -1,3 +1,14 @@
+import {
+  Button,
+  CloseButton,
+  createListCollection,
+  Dialog,
+  Field,
+  Input,
+  Portal,
+  Select,
+  VStack,
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 
 type Category = {
@@ -8,8 +19,9 @@ type Category = {
 };
 
 type TransactionsFormProps = {
-  addTransaction: (newTransaction: Transaction) => void;
   categories: Category[];
+  addTransaction: (newTransaction: Transaction) => void;
+  setIsDialogOpen: (isOpen: boolean) => void;
 };
 
 type TransactionForm = {
@@ -25,13 +37,14 @@ type Transaction = {
   date: string;
   amount: number;
   type: string;
-  category_id: string;
+  categoryId: string;
   memo: string;
 };
 
 export default function TransactionsForm({
-  addTransaction,
   categories,
+  addTransaction,
+  setIsDialogOpen,
 }: TransactionsFormProps) {
   const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10)
@@ -40,11 +53,16 @@ export default function TransactionsForm({
   const [type, setType] = useState<string>("expense");
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const categoriesCollection = createListCollection({
+    items: categories.map((category) => ({
+      value: category.id,
+      label: category.name,
+    })),
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     const newTransaction: TransactionForm = {
       date,
@@ -74,78 +92,147 @@ export default function TransactionsForm({
 
       const createdTransaction = await res.json();
       addTransaction(createdTransaction);
-
-      // Reset form fields
-      setDate(new Date().toISOString().slice(0, 10));
-      setAmount(0);
-      setType("expense");
-      setMemo("");
+      setIsDialogOpen(false);
     } catch (error) {
       console.error("Error creating transaction:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-
   return (
     <div>
-      <h2>取引登録</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          日付:
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          金額:
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            required
-          />
-        </label>
-        <label>
-          種類:
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            required
-          >
-            <option value="income">収入</option>
-            <option value="expense">支出</option>
-          </select>
-        </label>
-        <label>
-          カテゴリ:
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(String(e.target.value))}
-            required
-          >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          メモ:
-          <input
-            type="text"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-          />
-        </label>
-        <button type="submit">登録</button>
-      </form>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton />
+            </Dialog.CloseTrigger>
+
+            <Dialog.Header>
+              <Dialog.Title>新しい取引を追加</Dialog.Title>
+            </Dialog.Header>
+
+            <Dialog.Body>
+              <VStack>
+                <Field.Root>
+                  <Field.Label>日付</Field.Label>
+                  <Input
+                    type="date"
+                    value={date ?? ""}
+                    onChange={(e) => setDate(e.target.value)}
+                    required
+                  />
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label>金額</Field.Label>
+                  <Input
+                    type="number"
+                    value={amount ?? ""}
+                    onChange={(e) => setAmount(Number(e.target.value))}
+                    required
+                  />
+                </Field.Root>
+
+                <Field.Root>
+                  <DialogSelect />
+                </Field.Root>
+
+                <Field.Root>
+                  <DialogCategoriesSelect />
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label>メモ</Field.Label>
+                  <Input
+                    type="text"
+                    value={memo ?? ""}
+                    onChange={(e) => setMemo(e.target.value)}
+                  />
+                </Field.Root>
+              </VStack>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+                保存
+              </Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
     </div>
   );
+
+  function DialogCategoriesSelect() {
+    return (
+      <Select.Root
+        collection={categoriesCollection}
+        size="sm"
+        onValueChange={(e) => setCategoryId(String(e.value[0]))}
+        value={categoriesCollection.items.map((Item) =>
+          Item.value === categoryId ? Item.value : ""
+        )}
+      >
+        <Select.HiddenSelect />
+        <Select.Label>カテゴリー選択</Select.Label>
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder="選択" />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Select.Positioner>
+          <Select.Content>
+            {categoriesCollection.items.map((item) => (
+              <Select.Item item={item} key={item.value}>
+                {item.label}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Select.Root>
+    );
+  }
+
+  function DialogSelect() {
+    return (
+      <Select.Root
+        collection={types}
+        size="sm"
+        onValueChange={(e) => setType(e.value[0])}
+        value={types.items.map((Item) =>
+          Item.value === type ? Item.value : ""
+        )}
+      >
+        <Select.HiddenSelect />
+        <Select.Label>収支選択</Select.Label>
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder="選択" />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Select.Positioner>
+          <Select.Content>
+            {types.items.map((item) => (
+              <Select.Item item={item} key={item.value}>
+                {item.label}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Select.Root>
+    );
+  }
 }
+
+const types = createListCollection({
+  items: [
+    { value: "income", label: "収入" },
+    { value: "expense", label: "支出" },
+  ],
+});
