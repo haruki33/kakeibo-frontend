@@ -17,7 +17,7 @@ type Category = {
 
 type AmountPerCategoryPerMonth = {
   month: string;
-  category_id: string;
+  categoryId: string;
   total_amount: number;
 };
 
@@ -35,7 +35,7 @@ const createRows = ({
     const amounts = columns.map((month) => {
       const item = amountPerCategoryPerMonth.find(
         (entry) =>
-          entry.month === String(month) && entry.category_id === category.id
+          entry.month === String(month) && entry.categoryId === category.id
       );
       return item ? Number(item.total_amount) : 0;
     });
