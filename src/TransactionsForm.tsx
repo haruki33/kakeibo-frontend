@@ -9,7 +9,7 @@ import {
   Select,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 type Category = {
   id: string;
@@ -60,6 +60,14 @@ export default function TransactionsForm({
       label: category.name,
     })),
   });
+
+  useMemo(() => {
+    setType(categories.find((cat) => cat.id === categoryId)?.type || "expense");
+  }, [categories, categoryId]);
+
+  useMemo(() => {
+    console.log(`type: ${type}`);
+  }, [type]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +133,10 @@ export default function TransactionsForm({
                 </Field.Root>
 
                 <Field.Root>
+                  <DialogCategoriesSelect />
+                </Field.Root>
+
+                <Field.Root>
                   <Field.Label>金額</Field.Label>
                   <Input
                     type="number"
@@ -132,14 +144,6 @@ export default function TransactionsForm({
                     onChange={(e) => setAmount(Number(e.target.value))}
                     required
                   />
-                </Field.Root>
-
-                <Field.Root>
-                  <DialogSelect />
-                </Field.Root>
-
-                <Field.Root>
-                  <DialogCategoriesSelect />
                 </Field.Root>
 
                 <Field.Root>
@@ -195,44 +199,4 @@ export default function TransactionsForm({
       </Select.Root>
     );
   }
-
-  function DialogSelect() {
-    return (
-      <Select.Root
-        collection={types}
-        size="sm"
-        onValueChange={(e) => setType(e.value[0])}
-        value={types.items.map((Item) =>
-          Item.value === type ? Item.value : ""
-        )}
-      >
-        <Select.HiddenSelect />
-        <Select.Label>収支選択</Select.Label>
-        <Select.Control>
-          <Select.Trigger>
-            <Select.ValueText placeholder="選択" />
-          </Select.Trigger>
-          <Select.IndicatorGroup>
-            <Select.Indicator />
-          </Select.IndicatorGroup>
-        </Select.Control>
-        <Select.Positioner>
-          <Select.Content>
-            {types.items.map((item) => (
-              <Select.Item item={item} key={item.value}>
-                {item.label}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Select.Root>
-    );
-  }
 }
-
-const types = createListCollection({
-  items: [
-    { value: "income", label: "収入" },
-    { value: "expense", label: "支出" },
-  ],
-});
