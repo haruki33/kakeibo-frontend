@@ -10,13 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
-
-type Category = {
-  id: string;
-  name: string;
-  type: string;
-  color: string;
-};
+import type { Category, Transaction } from "./components/types/myregister.ts";
 
 type TransactionsFormProps = {
   categories: Category[];
@@ -25,15 +19,6 @@ type TransactionsFormProps = {
 };
 
 type TransactionForm = {
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
-};
-
-type Transaction = {
-  id: string;
   date: string;
   amount: number;
   type: string;
@@ -171,7 +156,6 @@ export default function TransactionsForm({
     return (
       <Select.Root
         collection={categoriesCollection}
-        size="sm"
         onValueChange={(e) => setCategoryId(String(e.value[0]))}
         value={categoriesCollection.items.map((Item) =>
           Item.value === categoryId ? Item.value : ""

@@ -9,13 +9,7 @@ import {
   Select,
   Stack,
 } from "@chakra-ui/react";
-
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-  type: string;
-};
+import type { Category } from "./components/types/mysetting.ts";
 
 type CategoriesFormProps = {
   categories: Category[];
@@ -27,7 +21,6 @@ export default function CategoriesForm({
   addCategories,
 }: CategoriesFormProps) {
   const [name, setName] = useState<string>("給料");
-  const [color, setColor] = useState<string>("#ff7f50");
   const [type, setType] = useState<string>("income");
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +37,6 @@ export default function CategoriesForm({
     const newCategory: Category = {
       id: uuidv4(),
       name,
-      color,
       type,
     };
 
@@ -63,7 +55,6 @@ export default function CategoriesForm({
 
       addCategories(newCategory);
       setName("給料");
-      setColor("#ff7f50");
       setType("income");
     } catch (error) {
       console.error("Error creating category:", error);
@@ -82,24 +73,18 @@ export default function CategoriesForm({
             <Field.Label>項目名</Field.Label>
             <Input
               variant="outline"
-              placeholder={name}
+              value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
           </Field.Root>
 
           <Field.Root>
-            <Field.Label>色</Field.Label>
-            <Input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              required
-            />
-          </Field.Root>
-
-          <Field.Root>
-            <Select.Root collection={types} defaultValue={["income"]}>
+            <Select.Root
+              collection={types}
+              value={[type]}
+              onValueChange={(e) => setType(e.value[0])}
+            >
               <Select.HiddenSelect />
               <Select.Label>種類</Select.Label>
               <Select.Control>

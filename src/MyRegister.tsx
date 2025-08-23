@@ -5,21 +5,7 @@ import TransactionsList from "./TransactionsList.tsx";
 import TransactionsForm from "./TransactionsForm.tsx";
 import { Button, Card, Dialog, Stack, VStack } from "@chakra-ui/react";
 
-type Category = {
-  id: string;
-  name: string;
-  type: string;
-  color: string;
-};
-
-type Transaction = {
-  id: string;
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
-};
+import type { Category, Transaction } from "./components/types/myregister.ts";
 
 function MyRegister() {
   const [selectedYearAndMonth, setSelectedYearAndMonth] = useState(

@@ -15,13 +15,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-  type: string;
-};
+import type { Category } from "./components/types/mysetting.ts";
 
 type categoriesListProps = {
   categories: Category[];
@@ -71,7 +65,6 @@ export default function CategoriesList({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editTarget.name,
-          color: editTarget.color,
           type: editTarget.type,
         }),
       });
@@ -131,21 +124,6 @@ export default function CategoriesList({
                             </Field.Root>
 
                             <Field.Root>
-                              <Field.Label>色</Field.Label>
-                              <Input
-                                type="color"
-                                value={editTarget ? editTarget.color : ""}
-                                onChange={(e) =>
-                                  setEditTarget((prev) =>
-                                    prev
-                                      ? { ...prev, color: e.target.value }
-                                      : null
-                                  )
-                                }
-                              />
-                            </Field.Root>
-
-                            <Field.Root>
                               <DialogSelect />
                             </Field.Root>
                           </VStack>
@@ -186,7 +164,7 @@ export default function CategoriesList({
         onValueChange={(e) =>
           setEditTarget((prev) => (prev ? { ...prev, type: e.value[0] } : null))
         }
-        defaultValue={editTarget ? [editTarget.type] : []}
+        value={editTarget ? [editTarget.type] : []}
       >
         <Select.HiddenSelect />
         <Select.Label>収支選択</Select.Label>
