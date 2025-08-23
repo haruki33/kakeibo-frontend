@@ -6,7 +6,7 @@ type Transaction = {
   date: string;
   amount: number;
   type: string;
-  category_id: string;
+  categoryId: string;
   memo: string;
 };
 

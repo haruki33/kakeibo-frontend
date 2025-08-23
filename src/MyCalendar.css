@@ -32,7 +32,7 @@
 }
 
 .react-calendar__tile {
-  aspect-ratio: 1 / 1;
+  /* aspect-ratio: 1 / 1; */
   border: 1px solid #eee;
   display: flex;
   flex-direction: column;

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 
 import Calendar from "./Calendar.tsx";
 import TransactionsList from "./TransactionsList.tsx";
 import TransactionsForm from "./TransactionsForm.tsx";
+import { Button, Card, Dialog, Stack, VStack } from "@chakra-ui/react";
 
 type Category = {
   id: string;
@@ -18,7 +17,7 @@ type Transaction = {
   date: string;
   amount: number;
   type: string;
-  category_id: string;
+  categoryId: string;
   memo: string;
 };
 
@@ -31,7 +30,7 @@ function MyRegister() {
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isUpdated, setIsUpdated] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const addTransaction = (newTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) => [...prev, newTransaction]);
@@ -68,47 +67,53 @@ function MyRegister() {
       .then((data) => {
         console.log("fetched transactions:", data);
         setTransactions(data);
-        setIsUpdated(false);
-        // setLoading(false);
       })
       .catch((e) => {
         console.error("Failed to fetch transactions", e);
-        // setLoading(false);
       });
-  }, [selectedYearAndMonth, isUpdated]);
+  }, [selectedYearAndMonth]);
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Calendar
-              setYearAndMonth={setSelectedYearAndMonth}
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
-              transactions={transactions}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }} sx={{ height: "50dvh" }}>
-                <TransactionsList
-                  transactions={transactions}
-                  selectedDate={selectedDate}
-                  deleteTransaction={deleteTransaction}
-                  updateTransaction={updatedTransaction}
-                />
-              </Grid>
-              <Grid size={{ xs: 12 }} sx={{ height: "50dvh" }}>
+      <Stack direction={{ base: "column", md: "row" }}>
+        <Card.Root h="80vh" w="60vw" m="20px">
+          <Calendar
+            setYearAndMonth={setSelectedYearAndMonth}
+            setSelectedDate={setSelectedDate}
+            selectedDate={selectedDate}
+            transactions={transactions}
+          />
+        </Card.Root>
+        <VStack>
+          <Card.Root h="80vh" w="30vw" m="20px">
+            <Card.Body>
+              <Card.Title>お金の記録</Card.Title>
+              <TransactionsList
+                categories={categories}
+                transactions={transactions}
+                selectedDate={selectedDate}
+                deleteTransaction={deleteTransaction}
+                updateTransaction={updatedTransaction}
+              />
+            </Card.Body>
+            <Card.Footer>
+              <Dialog.Root
+                open={isDialogOpen}
+                onOpenChange={(details) => setIsDialogOpen(details.open)}
+              >
+                <Dialog.Trigger asChild>
+                  <Button variant="outline">新しい取引を追加</Button>
+                </Dialog.Trigger>
                 <TransactionsForm
                   categories={categories}
                   addTransaction={addTransaction}
+                  setIsDialogOpen={setIsDialogOpen}
                 />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
+              </Dialog.Root>
+            </Card.Footer>
+          </Card.Root>
+        </VStack>
+      </Stack>
     </>
   );
 }
