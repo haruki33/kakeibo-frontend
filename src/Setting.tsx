@@ -3,12 +3,7 @@ import CategoriesForm from "./CategoriesForm";
 import CategoriesList from "./CategoriesList";
 import { Card, Stack } from "@chakra-ui/react";
 
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-  type: string;
-};
+import type { Category } from "./components/types/mysetting.ts";
 
 function Setting() {
   const [categories, setCategories] = useState<Category[]>([]);

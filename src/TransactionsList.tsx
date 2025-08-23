@@ -14,6 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import type { Category, Transaction } from "./components/types/myregister.ts";
 
 type TransactionsListProps = {
   categories: Category[];
@@ -21,22 +22,6 @@ type TransactionsListProps = {
   selectedDate: string;
   deleteTransaction: (id: string) => void;
   updateTransaction: (updatedTransaction: Transaction) => void;
-};
-
-type Category = {
-  id: string;
-  name: string;
-  type: string;
-  color: string;
-};
-
-type Transaction = {
-  id: string;
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
 };
 
 export default function TransactionsList({
