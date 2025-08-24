@@ -79,10 +79,14 @@ function MyCalendar({
               {displayTxs.map((tx) => (
                 <div
                   key={tx.id}
-                  style={{ color: tx.type === "income" ? "blue" : "red" }}
-                >
-                  ●
-                </div>
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    backgroundColor:
+                      tx.type === "income" ? "#60A5FA" : "#F87171",
+                  }}
+                ></div>
               ))}
             </div>
           </>

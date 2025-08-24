@@ -82,7 +82,7 @@ export default function CategoriesList({
       <Stack>
         {categories.map((cat) => (
           <Box key={cat.id}>
-            <HStack>
+            <HStack color={cat.type === "income" ? "#60A5FA" : "#F87171"}>
               {cat.name}
               <HStack flex={1} justify="flex-end">
                 <Dialog.Root
@@ -142,7 +142,7 @@ export default function CategoriesList({
                 </Dialog.Root>
 
                 <IconButton
-                  color="red"
+                  color="#F87171"
                   variant="ghost"
                   onClick={() => deleteCategory(cat.id)}
                 >
