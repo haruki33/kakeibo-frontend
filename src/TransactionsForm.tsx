@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
 import type { Category, Transaction } from "./components/types/myregister.ts";
+import { groupBy } from "es-toolkit";
 
 type TransactionsFormProps = {
   categories: Category[];
@@ -45,8 +46,13 @@ export default function TransactionsForm({
     items: categories.map((category) => ({
       value: category.id,
       label: category.name,
+      category: category.type,
     })),
   });
+
+  const categoriesType = Object.entries(
+    groupBy(categoriesCollection.items, (item) => item.category)
+  );
 
   useMemo(() => {
     setType(categories.find((cat) => cat.id === categoryId)?.type || "expense");
@@ -175,10 +181,21 @@ export default function TransactionsForm({
         </Select.Control>
         <Select.Positioner>
           <Select.Content>
-            {categoriesCollection.items.map((item) => (
-              <Select.Item item={item} key={item.value}>
-                {item.label}
-              </Select.Item>
+            {categoriesType.map(([category, items]) => (
+              <Select.ItemGroup key={category}>
+                <Select.ItemGroupLabel
+                  color={category === "income" ? "#60A5FA" : "#F87171"}
+                  fontWeight="bold"
+                >
+                  {category === "income" ? "収入" : "支出"}
+                </Select.ItemGroupLabel>
+                {items.map((item) => (
+                  <Select.Item item={item} key={item.value}>
+                    {item.label}
+                    <Select.ItemIndicator />
+                  </Select.Item>
+                ))}
+              </Select.ItemGroup>
             ))}
           </Select.Content>
         </Select.Positioner>
