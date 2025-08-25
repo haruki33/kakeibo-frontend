@@ -53,8 +53,8 @@ export default function TransactionsForm({
   }, [categories, categoryId]);
 
   useMemo(() => {
-    console.log(`type: ${type}`);
-  }, [type]);
+    setDate(selectedDate);
+  }, [selectedDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +113,7 @@ export default function TransactionsForm({
                   <Field.Label>日付</Field.Label>
                   <Input
                     type="date"
-                    value={selectedDate ?? ""}
+                    value={date ?? ""}
                     onChange={(e) => setDate(e.target.value)}
                     required
                   />
