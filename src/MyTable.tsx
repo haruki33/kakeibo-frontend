@@ -1,13 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Container from "@mui/material/Container";
 
 import type { Category } from "./components/types/mytable.ts";
+import { Table, Card } from "@chakra-ui/react";
 
 type AmountPerCategoryPerMonth = {
   month: string;
@@ -127,93 +121,100 @@ export default function MyTable() {
   );
 
   return (
-    <TableContainer component={Container}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>月</TableCell>
-            {[...Array(12)].map((_, i) => (
-              <TableCell key={i + 1} align="right">
-                {i + 1}月
-              </TableCell>
-            ))}
-            <TableCell>合計</TableCell>
-            <TableCell>平均</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rowsIncome.map((row, rowIdx) => (
-            <TableRow key={categories[rowIdx]?.id || rowIdx}>
-              <TableCell>{row[0]}</TableCell>
-              {row.slice(1).map((cell, cellIdx) => (
-                <TableCell key={cellIdx} align="right">
-                  {typeof cell === "number" ? cell.toLocaleString() : cell}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+    <div>
+      <Card.Root m="4" variant="outline">
+        <Card.Header>
+          <Card.Title>年間収支記録</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Table.ScrollArea borderWidth="1px">
+            <Table.Root size="sm" variant="outline" textSizeAdjust="auto">
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>月</Table.ColumnHeader>
+                  {[...Array(12)].map((_, i) => (
+                    <Table.ColumnHeader key={i + 1} align="right">
+                      {i + 1}月
+                    </Table.ColumnHeader>
+                  ))}
+                  <Table.ColumnHeader>合計</Table.ColumnHeader>
+                  <Table.ColumnHeader>平均</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {rowsIncome.map((row, rowIdx) => (
+                  <Table.Row key={categories[rowIdx]?.id || rowIdx}>
+                    <Table.Cell>{row[0]}</Table.Cell>
+                    {row.slice(1).map((cell, cellIdx) => (
+                      <Table.Cell key={cellIdx} align="right">
+                        {typeof cell === "number"
+                          ? Math.floor(cell).toLocaleString()
+                          : cell}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                ))}
 
-          {incomeTotalsPerMonth.length > 0 && (
-            <TableRow sx={{ backgroundColor: "#e9f3ffff", fontWeight: "bold" }}>
-              <TableCell sx={{ fontWeight: "bold" }}>
-                {incomeTotalsPerMonth[0]}
-              </TableCell>
-              {incomeTotalsPerMonth.slice(1).map((total, cellIdx) => (
-                <TableCell
-                  key={cellIdx}
-                  align="right"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {typeof total === "number" ? total.toLocaleString() : total}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
+                {incomeTotalsPerMonth.length > 0 && (
+                  <Table.Row backgroundColor="#e9f3ffff" fontWeight="bold">
+                    <Table.Cell fontWeight="bold">
+                      {incomeTotalsPerMonth[0]}
+                    </Table.Cell>
+                    {incomeTotalsPerMonth.slice(1).map((total, cellIdx) => (
+                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                        {typeof total === "number"
+                          ? Math.floor(total).toLocaleString()
+                          : total}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                )}
 
-          {rowsExpense.map((row, rowIdx) => (
-            <TableRow key={categories[rowIdx]?.id || rowIdx}>
-              <TableCell>{row[0]}</TableCell>
-              {row.slice(1).map((cell, cellIdx) => (
-                <TableCell key={cellIdx} align="right">
-                  {typeof cell === "number" ? cell.toLocaleString() : cell}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+                {rowsExpense.map((row, rowIdx) => (
+                  <Table.Row key={categories[rowIdx]?.id || rowIdx}>
+                    <Table.Cell>{row[0]}</Table.Cell>
+                    {row.slice(1).map((cell, cellIdx) => (
+                      <Table.Cell key={cellIdx} align="right">
+                        {typeof cell === "number"
+                          ? Math.floor(cell).toLocaleString()
+                          : cell}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                ))}
 
-          {expenseTotalsPerMonth.length > 0 && (
-            <TableRow sx={{ backgroundColor: "#ffe9e9ff", fontWeight: "bold" }}>
-              <TableCell sx={{ fontWeight: "bold" }}>
-                {expenseTotalsPerMonth[0]}
-              </TableCell>
-              {expenseTotalsPerMonth.slice(1).map((total, cellIdx) => (
-                <TableCell
-                  key={cellIdx}
-                  align="right"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {typeof total === "number" ? total.toLocaleString() : total}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
+                {expenseTotalsPerMonth.length > 0 && (
+                  <Table.Row backgroundColor="#ffe9e9ff" fontWeight="bold">
+                    <Table.Cell fontWeight="bold">
+                      {expenseTotalsPerMonth[0]}
+                    </Table.Cell>
+                    {expenseTotalsPerMonth.slice(1).map((total, cellIdx) => (
+                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                        {typeof total === "number"
+                          ? Math.floor(total).toLocaleString()
+                          : total}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                )}
 
-          {BOP.length > 0 && (
-            <TableRow sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>
-              <TableCell sx={{ fontWeight: "bold" }}>{BOP[0]}</TableCell>
-              {BOP.slice(1).map((total, cellIdx) => (
-                <TableCell
-                  key={cellIdx}
-                  align="right"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {typeof total === "number" ? total.toLocaleString() : total}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                {BOP.length > 0 && (
+                  <Table.Row backgroundColor="#f5f5f5" fontWeight="bold">
+                    <Table.Cell fontWeight="bold">{BOP[0]}</Table.Cell>
+                    {BOP.slice(1).map((total, cellIdx) => (
+                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                        {typeof total === "number"
+                          ? Math.floor(total).toLocaleString()
+                          : total}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                )}
+              </Table.Body>
+            </Table.Root>
+          </Table.ScrollArea>
+        </Card.Body>
+      </Card.Root>
+    </div>
   );
 }
