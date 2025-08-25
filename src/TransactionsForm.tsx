@@ -14,6 +14,7 @@ import type { Category, Transaction } from "./components/types/myregister.ts";
 
 type TransactionsFormProps = {
   categories: Category[];
+  selectedDate: string;
   addTransaction: (newTransaction: Transaction) => void;
   setIsDialogOpen: (isOpen: boolean) => void;
 };
@@ -28,6 +29,7 @@ type TransactionForm = {
 
 export default function TransactionsForm({
   categories,
+  selectedDate,
   addTransaction,
   setIsDialogOpen,
 }: TransactionsFormProps) {
@@ -111,7 +113,7 @@ export default function TransactionsForm({
                   <Field.Label>日付</Field.Label>
                   <Input
                     type="date"
-                    value={date ?? ""}
+                    value={selectedDate ?? ""}
                     onChange={(e) => setDate(e.target.value)}
                     required
                   />

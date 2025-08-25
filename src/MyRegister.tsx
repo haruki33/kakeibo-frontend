@@ -110,6 +110,7 @@ function MyRegister() {
               </Dialog.Trigger>
               <TransactionsForm
                 categories={categories}
+                selectedDate={selectedDate}
                 addTransaction={addTransaction}
                 setIsDialogOpen={setIsDialogOpen}
               />
