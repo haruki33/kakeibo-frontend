@@ -69,7 +69,7 @@ function MyRegister() {
         justify="center"
       >
         <Card.Root
-          h={{ base: "50vh", md: "80vh" }}
+          h={{ base: "40vh", md: "80vh" }}
           w={{ base: "full", md: "60vw" }}
           minH="400px"
         >
@@ -86,6 +86,7 @@ function MyRegister() {
             w={{ base: "full", md: "30vw" }}
             minH="400px"
             flex="1"
+            size="sm"
           >
             <Card.Body>
               <Card.Title>お金の記録</Card.Title>
@@ -102,6 +103,7 @@ function MyRegister() {
             <Dialog.Root
               open={isDialogOpen}
               onOpenChange={(details) => setIsDialogOpen(details.open)}
+              placement="center"
             >
               <Dialog.Trigger asChild>
                 <Button m="4" colorPalette="green" variant="solid">

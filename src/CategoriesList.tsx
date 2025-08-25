@@ -89,6 +89,7 @@ export default function CategoriesList({
                   onOpenChange={(open) =>
                     open ? setEditTarget(cat) : setEditTarget(null)
                   }
+                  placement="center"
                 >
                   <Dialog.Trigger asChild>
                     <IconButton color="green" variant="ghost">
