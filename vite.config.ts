@@ -8,4 +8,5 @@ export default defineConfig({
     host: true,
   },
   plugins: [react(), tsconfigPaths()],
+  base: "./",
 });
