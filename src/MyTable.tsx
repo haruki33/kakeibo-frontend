@@ -121,7 +121,7 @@ export default function MyTable() {
   );
 
   return (
-    <div>
+    <>
       <Card.Root m="4" variant="outline">
         <Card.Header>
           <Card.Title>年間収支記録</Card.Title>
@@ -215,6 +215,6 @@ export default function MyTable() {
           </Table.ScrollArea>
         </Card.Body>
       </Card.Root>
-    </div>
+    </>
   );
 }

@@ -51,7 +51,6 @@ function MyRegister() {
     fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("fetched transactions:", data);
         setTransactions(data);
       })
       .catch((e) => {

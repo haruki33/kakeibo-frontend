@@ -5,7 +5,7 @@ import { Card, Stack } from "@chakra-ui/react";
 
 import type { Category } from "./components/types/mysetting.ts";
 
-function Setting() {
+function MySetting() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   const addCategories = (newCategories: Category) => {
@@ -93,4 +93,4 @@ function Setting() {
   );
 }
 
-export default Setting;
+export default MySetting;
