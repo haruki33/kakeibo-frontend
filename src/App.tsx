@@ -1,20 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MyAppBar from "./MyAppBar.tsx";
 import MyRegister from "./MyRegister.tsx";
 import MyTable from "./MyTable";
-import Setting from "./Setting";
+import MySetting from "./MySetting";
+import MyHeader from "./MyHeader.tsx";
+import { Box } from "@chakra-ui/react";
 
 function App() {
   return (
     <>
-      <Router>
-        <MyAppBar />
-        <Routes>
-          <Route path="/" element={<MyRegister />} />
-          <Route path="/MyTable" element={<MyTable />} />
-          <Route path="/setting" element={<Setting />} />
-        </Routes>
-      </Router>
+      <Box bg="gray.200" minH="110vh">
+        <Router>
+          <MyHeader />
+          <Routes>
+            <Route path="/" element={<MyRegister />} />
+            <Route path="/MyTable" element={<MyTable />} />
+            <Route path="/MySetting" element={<MySetting />} />
+          </Routes>
+        </Router>
+      </Box>
     </>
   );
 }
