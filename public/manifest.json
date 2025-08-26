@@ -6,12 +6,12 @@
   "description": "お金管理アプリ",
   "icons": [
     {
-      "src": "/icons/mymoney192.png",
+      "src": "/mymoney192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/mymoney512.png",
+      "src": "/mymoney512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
