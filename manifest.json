@@ -1,0 +1,14 @@
+{
+  "manifest_version": "3",
+  "name": "My Money",
+  "short_name": "Money",
+  "version": "0.1.0",
+  "description": "お金管理アプリ",
+  "icons": [
+    {
+      "src": "images/icon-161x128.png",
+      "sizes": "161x128",
+      "type": "image/png"
+    }
+  ]
+}
