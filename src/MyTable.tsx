@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
 import type { Category } from "./components/types/mytable.ts";
-import { Table, Card } from "@chakra-ui/react";
+import { Table, Card, Flex, Switch } from "@chakra-ui/react";
 
 type AmountPerCategoryPerMonth = {
   month: string;
@@ -73,8 +73,12 @@ const calculateBOP = (rowsIncome: number[], rowsExpense: number[]) => {
 
 export default function MyTable() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [amountPerCategoryPerMonth, setAmountPerCategoryPerMonth] = useState<
+    AmountPerCategoryPerMonth[]
+  >([]);
   const [rowsIncome, setRowsIncome] = useState<(string | number)[][]>([]);
   const [rowsExpense, setRowsExpense] = useState<(string | number)[][]>([]);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -91,21 +95,28 @@ export default function MyTable() {
     fetch(`${baseUrl}/transactions/summary?year=${new Date().getFullYear()}`)
       .then((res) => res.json())
       .then((data: AmountPerCategoryPerMonth[]) => {
-        setRowsIncome(
-          createRows({
-            categories: categories.filter((cat) => cat.type === "income"),
-            amountPerCategoryPerMonth: data,
-          })
-        );
-        setRowsExpense(
-          createRows({
-            categories: categories.filter((cat) => cat.type === "expense"),
-            amountPerCategoryPerMonth: data,
-          })
-        );
+        setAmountPerCategoryPerMonth(data);
       })
       .catch((e) => console.error("Failed to fetch categories", e));
   }, [categories]);
+
+  useEffect(() => {
+    const filteredCategories = checked
+      ? categories
+      : categories.filter((cat) => !cat.is_deleted);
+    setRowsIncome(
+      createRows({
+        categories: filteredCategories.filter((cat) => cat.type === "income"),
+        amountPerCategoryPerMonth: amountPerCategoryPerMonth,
+      })
+    );
+    setRowsExpense(
+      createRows({
+        categories: filteredCategories.filter((cat) => cat.type === "expense"),
+        amountPerCategoryPerMonth: amountPerCategoryPerMonth,
+      })
+    );
+  }, [categories, amountPerCategoryPerMonth, checked]);
 
   const incomeTotalsPerMonth = useMemo(
     () => calculateColumnTotals(rowsIncome),
@@ -124,7 +135,21 @@ export default function MyTable() {
     <>
       <Card.Root m="4" variant="outline">
         <Card.Header>
-          <Card.Title>年間収支記録</Card.Title>
+          <Flex justify="space-between">
+            <Card.Title textStyle={{ base: "xs", md: "md" }}>
+              年間収支記録
+            </Card.Title>
+            <Switch.Root
+              checked={checked}
+              onCheckedChange={(e) => setChecked(e.checked)}
+            >
+              <Switch.HiddenInput />
+              <Switch.Control />
+              <Switch.Label textStyle={{ base: "xs", md: "sm" }}>
+                削除済みも表示
+              </Switch.Label>
+            </Switch.Root>
+          </Flex>
         </Card.Header>
         <Card.Body>
           <Table.ScrollArea borderWidth="1px">

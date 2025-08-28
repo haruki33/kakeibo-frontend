@@ -1,46 +1,53 @@
 import { useState } from "react";
 import {
-  Box,
   Button,
   CloseButton,
   createListCollection,
   Dialog,
   Field,
-  HStack,
   IconButton,
   Input,
   Portal,
   Select,
-  Stack,
+  Table,
   VStack,
+  Text,
+  Card,
+  Box,
+  Flex,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import type { Category } from "./components/types/mysetting.ts";
 
 type categoriesListProps = {
   categories: Category[];
-  deleteCategories: (categoryId: string) => void;
   updateCategories: (category: Category) => void;
+  deleteCategories: (id: string) => void;
 };
 
 export default function CategoriesList({
   categories,
-  deleteCategories,
   updateCategories,
+  deleteCategories,
 }: categoriesListProps) {
   const [editTarget, setEditTarget] = useState<Category | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  const [isDeletedCategoriesDialogOpen, setIsDeletedCategoriesDialogOpen] =
+    useState<boolean>(false);
 
-  const deleteCategory = async (id: string) => {
+  const deleteCategory = async (category: Category) => {
     if (!confirm("本当に削除しますか？")) return;
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/categories/${id}`, {
-        method: "DELETE",
+      const res = await fetch(`${baseUrl}/categories/${category.id}/delete`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) throw new Error("Failed to delete category");
 
-      deleteCategories(id);
+      const deletedCategory = await res.json();
+      updateCategories(deletedCategory);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -54,10 +61,11 @@ export default function CategoriesList({
       return;
     }
 
-    if (categories.some((cat) => cat.id === editTarget.id)) {
-      alert("同じIDのカテゴリが存在します");
+    if (categories.some((cat) => cat.name === editTarget.name)) {
+      alert("同じ名前のカテゴリが存在します");
       return;
     }
+
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${editTarget.id}`, {
@@ -77,84 +85,205 @@ export default function CategoriesList({
     }
   };
 
+  const deletedeletedCategory = async (category: Category) => {
+    if (!confirm("完全に削除されます，よろしいですか？")) return;
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${baseUrl}/categories/${category.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Failed to delete category");
+      deleteCategories(category.id);
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  };
+
+  const handleEditClick = (cat: Category) => {
+    setEditTarget(cat);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditTarget(null);
+    setIsEditDialogOpen(false);
+  };
+
+  const handleDeletedCategoriesDialogClose = () => {
+    setIsDeletedCategoriesDialogOpen(false);
+  };
+
+  const handleDisplayDeletedClick = () => {
+    setIsDeletedCategoriesDialogOpen(true);
+  };
+
   return (
-    <div>
-      <Stack>
-        {categories.map((cat) => (
-          <Box key={cat.id}>
-            <HStack color={cat.type === "income" ? "#60A5FA" : "#F87171"}>
-              {cat.name}
-              <HStack flex={1} justify="flex-end">
-                <Dialog.Root
-                  onOpenChange={(open) =>
-                    open ? setEditTarget(cat) : setEditTarget(null)
-                  }
-                  placement="center"
-                >
-                  <Dialog.Trigger asChild>
-                    <IconButton color="green" variant="ghost">
-                      <AiFillEdit />
-                    </IconButton>
-                  </Dialog.Trigger>
+    <>
+      <Card.Root
+        variant="outline"
+        h={{ base: "55vh", md: "80vh" }}
+        w={{ base: "full", md: "60vw" }}
+        minH="300px"
+        size="sm"
+      >
+        <Card.Body>
+          <Flex justify="space-between" pb="4">
+            <Card.Title>カテゴリ一覧</Card.Title>
+            <Box flex="1" />
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={handleDisplayDeletedClick}
+            >
+              削除済みを表示
+            </Button>
+          </Flex>
+          <Box maxH={{ base: "45vh", md: "70vh" }} overflowY="auto">
+            <Table.Root>
+              <Table.Body>
+                {categories
+                  .filter((cat) => !cat.is_deleted)
+                  .map((cat) => (
+                    <Table.Row key={cat.id}>
+                      <Table.Cell textAlign={"left"}>
+                        <Text
+                          color={cat.type === "income" ? "#60A5FA" : "#F87171"}
+                        >
+                          {cat.name}
+                        </Text>
+                      </Table.Cell>
 
-                  <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
-                      <Dialog.Content>
-                        <Dialog.CloseTrigger asChild>
-                          <CloseButton />
-                        </Dialog.CloseTrigger>
-                        <Dialog.Header>
-                          <Dialog.Title>カテゴリー編集</Dialog.Title>
-                        </Dialog.Header>
-                        <Dialog.Body>
-                          <VStack>
-                            <Field.Root>
-                              <Field.Label>カテゴリー名</Field.Label>
-                              <Input
-                                value={editTarget ? editTarget.name : ""}
-                                onChange={(e) =>
-                                  setEditTarget((prev) =>
-                                    prev
-                                      ? { ...prev, name: e.target.value }
-                                      : null
-                                  )
-                                }
-                                placeholder="カテゴリー名を入力"
-                              />
-                            </Field.Root>
+                      <Table.Cell textAlign={"right"}>
+                        <IconButton
+                          color="green"
+                          variant="ghost"
+                          onClick={() => handleEditClick(cat)}
+                        >
+                          <AiFillEdit />
+                        </IconButton>
 
-                            <Field.Root>
-                              <DialogSelect />
-                            </Field.Root>
-                          </VStack>
-                        </Dialog.Body>
-                        <Dialog.Footer>
-                          <Button
-                            colorPalette="green"
-                            onClick={(e) => handleSubmit(e)}
-                          >
-                            保存
-                          </Button>
-                        </Dialog.Footer>
-                      </Dialog.Content>
-                    </Dialog.Positioner>
-                  </Portal>
-                </Dialog.Root>
-
-                <IconButton
-                  color="#F87171"
-                  variant="ghost"
-                  onClick={() => deleteCategory(cat.id)}
-                >
-                  <AiFillDelete />
-                </IconButton>
-              </HStack>
-            </HStack>
+                        <IconButton
+                          color="#F87171"
+                          variant="ghost"
+                          onClick={() => deleteCategory(cat)}
+                        >
+                          <AiFillDelete />
+                        </IconButton>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+              </Table.Body>
+            </Table.Root>
           </Box>
-        ))}
-      </Stack>
-    </div>
+        </Card.Body>
+      </Card.Root>
+
+      <Dialog.Root
+        open={isEditDialogOpen}
+        onOpenChange={(details) => {
+          if (!details.open) {
+            handleEditDialogClose();
+          }
+        }}
+        placement="center"
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton />
+              </Dialog.CloseTrigger>
+              <Dialog.Header>
+                <Dialog.Title>カテゴリー編集</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack>
+                  <Field.Root>
+                    <Field.Label>カテゴリー名</Field.Label>
+                    <Input
+                      value={editTarget ? editTarget.name : ""}
+                      onChange={(e) =>
+                        setEditTarget((prev) =>
+                          prev ? { ...prev, name: e.target.value } : null
+                        )
+                      }
+                      placeholder="カテゴリー名を入力"
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <DialogSelect />
+                  </Field.Root>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+                  保存
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      <Dialog.Root
+        open={isDeletedCategoriesDialogOpen}
+        onOpenChange={(details) => {
+          if (!details.open) {
+            handleDeletedCategoriesDialogClose();
+          }
+        }}
+        placement="center"
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton />
+              </Dialog.CloseTrigger>
+              <Dialog.Header>
+                <Dialog.Title>削除済みカテゴリ一覧</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <Table.Root>
+                  <Table.Body>
+                    {categories
+                      .filter((cat) => cat.is_deleted)
+                      .map((cat) => (
+                        <Table.Row key={cat.id}>
+                          <Table.Cell textAlign={"left"}>
+                            <Text
+                              color={
+                                cat.type === "income" ? "#60A5FA" : "#F87171"
+                              }
+                            >
+                              {cat.name}
+                            </Text>
+                          </Table.Cell>
+
+                          <Table.Cell textAlign={"right"}>
+                            <IconButton
+                              color="#F87171"
+                              variant="ghost"
+                              onClick={() => deletedeletedCategory(cat)}
+                            >
+                              <AiFillDelete />
+                            </IconButton>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                  </Table.Body>
+                </Table.Root>
+              </Dialog.Body>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+    </>
   );
 
   function DialogSelect() {
