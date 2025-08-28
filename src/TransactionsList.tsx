@@ -123,11 +123,19 @@ export default function TransactionsList({
                 <Table.Row key={tx.id}>
                   <Table.Cell textAlign={"left"}>
                     <Text
-                      textStyle="md"
+                      textStyle={{ base: "xs", md: "md" }}
                       fontWeight="medium"
                       color={tx.type === "income" ? "#60A5FA" : "#F87171"}
                     >
-                      {categories.find((c) => c.id === tx.categoryId)?.name}
+                      {(() => {
+                        const category = categories.find(
+                          (c) => c.id === tx.categoryId
+                        );
+                        if (!category) return "";
+                        return category.is_deleted === true
+                          ? `${category.name}（削除済み）`
+                          : category.name;
+                      })()}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
                       {tx.memo}
@@ -136,19 +144,19 @@ export default function TransactionsList({
                   <Table.Cell>{tx.amount}円</Table.Cell>
                   <Table.Cell textAlign={"right"}>
                     <IconButton
-                      color="#F87171"
-                      variant="ghost"
-                      onClick={() => deleteTransactionOnList(tx.id)}
-                    >
-                      <AiFillDelete />
-                    </IconButton>
-
-                    <IconButton
                       color="green"
                       variant="ghost"
                       onClick={() => handleEditClick(tx)}
                     >
                       <AiFillEdit />
+                    </IconButton>
+
+                    <IconButton
+                      color="#F87171"
+                      variant="ghost"
+                      onClick={() => deleteTransactionOnList(tx.id)}
+                    >
+                      <AiFillDelete />
                     </IconButton>
                   </Table.Cell>
                 </Table.Row>
@@ -164,6 +172,7 @@ export default function TransactionsList({
             handleDialogClose();
           }
         }}
+        placement="center"
       >
         <Portal>
           <Dialog.Backdrop />

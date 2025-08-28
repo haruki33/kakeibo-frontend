@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import {
   Button,
+  Card,
   createListCollection,
   Field,
   Input,
@@ -9,7 +9,7 @@ import {
   Select,
   Stack,
 } from "@chakra-ui/react";
-import type { Category } from "./components/types/mysetting.ts";
+import type { Category, AddCategory } from "./components/types/mysetting.ts";
 
 type CategoriesFormProps = {
   categories: Category[];
@@ -34,8 +34,7 @@ export default function CategoriesForm({
       return;
     }
 
-    const newCategory: Category = {
-      id: uuidv4(),
+    const newCategory: AddCategory = {
       name,
       type,
     };
@@ -53,7 +52,8 @@ export default function CategoriesForm({
         throw new Error("Failed to create category");
       }
 
-      addCategories(newCategory);
+      const createdCategory = await res.json();
+      addCategories(createdCategory);
       setName("給料");
       setType("income");
     } catch (error) {
@@ -66,55 +66,68 @@ export default function CategoriesForm({
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <Stack gap="4" w="full">
-          <Field.Root>
-            <Field.Label>項目名</Field.Label>
-            <Input
-              variant="outline"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </Field.Root>
+    <>
+      <Card.Root
+        variant="outline"
+        h={{ base: "30vh", md: "30vh" }}
+        w={{ base: "full", md: "60vw" }}
+        minH="300px"
+        size="sm"
+      >
+        <Card.Header>
+          <Card.Title>カテゴリー追加</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <form onSubmit={handleSubmit}>
+            <Stack gap="4" w="full">
+              <Field.Root>
+                <Field.Label>項目名</Field.Label>
+                <Input
+                  variant="outline"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Field.Root>
 
-          <Field.Root>
-            <Select.Root
-              collection={types}
-              value={[type]}
-              onValueChange={(e) => setType(e.value[0])}
-            >
-              <Select.HiddenSelect />
-              <Select.Label>種類</Select.Label>
-              <Select.Control>
-                <Select.Trigger>
-                  <Select.ValueText placeholder="収入" />
-                </Select.Trigger>
-                <Select.IndicatorGroup>
-                  <Select.Indicator />
-                </Select.IndicatorGroup>
-              </Select.Control>
-              <Portal>
-                <Select.Positioner>
-                  <Select.Content>
-                    {types.items.map((type) => (
-                      <Select.Item item={type} key={type.value}>
-                        {type.label}
-                        <Select.ItemIndicator />
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Positioner>
-              </Portal>
-            </Select.Root>
-          </Field.Root>
-          <Button colorPalette="green" type="submit">
-            登録
-          </Button>
-        </Stack>
-      </form>
-    </div>
+              <Field.Root>
+                <Select.Root
+                  collection={types}
+                  value={[type]}
+                  onValueChange={(e) => setType(e.value[0])}
+                >
+                  <Select.HiddenSelect />
+                  <Select.Label>種類</Select.Label>
+                  <Select.Control>
+                    <Select.Trigger>
+                      <Select.ValueText placeholder="収入" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  <Portal>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {types.items.map((type) => (
+                          <Select.Item item={type} key={type.value}>
+                            {type.label}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
+              </Field.Root>
+              <Button colorPalette="green" type="submit">
+                登録
+              </Button>
+            </Stack>
+          </form>
+        </Card.Body>
+      </Card.Root>
+    </>
   );
 }
 
