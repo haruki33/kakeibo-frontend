@@ -47,6 +47,7 @@ export default function TransactionsForm({
       value: category.id,
       label: category.name,
       category: category.type,
+      is_deleted: category.is_deleted,
     })),
   });
 
@@ -189,12 +190,14 @@ export default function TransactionsForm({
                 >
                   {category === "income" ? "収入" : "支出"}
                 </Select.ItemGroupLabel>
-                {items.map((item) => (
-                  <Select.Item item={item} key={item.value}>
-                    {item.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
+                {items
+                  .filter((item) => !item.is_deleted)
+                  .map((item) => (
+                    <Select.Item item={item} key={item.value}>
+                      {item.label}
+                      <Select.ItemIndicator />
+                    </Select.Item>
+                  ))}
               </Select.ItemGroup>
             ))}
           </Select.Content>

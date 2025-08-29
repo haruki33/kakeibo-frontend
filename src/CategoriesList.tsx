@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import type { Category } from "./components/types/mysetting.ts";
+import { MdRestoreFromTrash } from "react-icons/md";
 
 type categoriesListProps = {
   categories: Category[];
@@ -61,11 +62,6 @@ export default function CategoriesList({
       return;
     }
 
-    if (categories.some((cat) => cat.name === editTarget.name)) {
-      alert("同じ名前のカテゴリが存在します");
-      return;
-    }
-
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${editTarget.id}`, {
@@ -74,14 +70,16 @@ export default function CategoriesList({
         body: JSON.stringify({
           name: editTarget.name,
           type: editTarget.type,
+          description: editTarget.description,
         }),
       });
       if (!res.ok) throw new Error("更新失敗");
 
       updateCategories(editTarget);
+      setIsEditDialogOpen(false);
     } catch (err) {
       console.error(err);
-      alert("取引更新に失敗しました");
+      alert("カテゴリ更新に失敗しました");
     }
   };
 
@@ -153,24 +151,35 @@ export default function CategoriesList({
                         >
                           {cat.name}
                         </Text>
+                        {cat.description?.length > 0 && (
+                          <Text
+                            fontSize="xs"
+                            color="gray.500"
+                            whiteSpace="pre-line"
+                          >
+                            {cat.description.replace(/(.{20})/g, "$1\n")}
+                          </Text>
+                        )}
                       </Table.Cell>
 
-                      <Table.Cell textAlign={"right"}>
-                        <IconButton
-                          color="green"
-                          variant="ghost"
-                          onClick={() => handleEditClick(cat)}
-                        >
-                          <AiFillEdit />
-                        </IconButton>
+                      <Table.Cell>
+                        <Flex flexDirection={"row"} justifyContent={"flex-end"}>
+                          <IconButton
+                            color="green"
+                            variant="ghost"
+                            onClick={() => handleEditClick(cat)}
+                          >
+                            <AiFillEdit />
+                          </IconButton>
 
-                        <IconButton
-                          color="#F87171"
-                          variant="ghost"
-                          onClick={() => deleteCategory(cat)}
-                        >
-                          <AiFillDelete />
-                        </IconButton>
+                          <IconButton
+                            color="#F87171"
+                            variant="ghost"
+                            onClick={() => deleteCategory(cat)}
+                          >
+                            <AiFillDelete />
+                          </IconButton>
+                        </Flex>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -216,6 +225,19 @@ export default function CategoriesList({
 
                   <Field.Root>
                     <DialogSelect />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>説明</Field.Label>
+                    <Input
+                      value={editTarget ? editTarget.description : ""}
+                      onChange={(e) =>
+                        setEditTarget((prev) =>
+                          prev ? { ...prev, description: e.target.value } : null
+                        )
+                      }
+                      placeholder="説明を入力"
+                    />
                   </Field.Root>
                 </VStack>
               </Dialog.Body>
@@ -263,16 +285,33 @@ export default function CategoriesList({
                             >
                               {cat.name}
                             </Text>
+                            {cat.description?.length > 0 && (
+                              <Text
+                                fontSize="xs"
+                                color="gray.500"
+                                whiteSpace="pre-line"
+                              >
+                                {cat.description.replace(/(.{20})/g, "$1\n")}
+                              </Text>
+                            )}
                           </Table.Cell>
 
-                          <Table.Cell textAlign={"right"}>
-                            <IconButton
-                              color="#F87171"
-                              variant="ghost"
-                              onClick={() => deletedeletedCategory(cat)}
+                          <Table.Cell>
+                            <Flex
+                              flexDirection={"row"}
+                              justifyContent={"flex-end"}
                             >
-                              <AiFillDelete />
-                            </IconButton>
+                              <IconButton color="green" variant="ghost">
+                                <MdRestoreFromTrash />
+                              </IconButton>
+                              <IconButton
+                                color="#F87171"
+                                variant="ghost"
+                                onClick={() => deletedeletedCategory(cat)}
+                              >
+                                <AiFillDelete />
+                              </IconButton>
+                            </Flex>
                           </Table.Cell>
                         </Table.Row>
                       ))}
