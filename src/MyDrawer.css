@@ -1,0 +1,100 @@
+.drawer-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 100;
+  background-color: white;
+}
+
+.drawer-nav.is-open {
+  transform: translateX(0);
+}
+
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.drawer-btn-wrapper {
+  position: fixed;
+  top: 9px;
+  right: 10px;
+  z-index: 101;
+}
+
+.drawer-btn-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -25px;
+  right: -25px;
+  height: 80px;
+  width: 80px;
+  /* inset: 0; */
+  border-radius: 50%;
+  background: #c5ecca;
+  z-index: -1;
+}
+
+.drawer-toggle {
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.drawer-toggle .icon,
+.drawer-toggle .icon::before,
+.drawer-toggle .icon::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: #333;
+  border-radius: 2px;
+  transition: all 0.3s;
+  position: absolute;
+}
+
+.drawer-toggle .icon {
+  position: relative;
+}
+
+.drawer-toggle .icon::before {
+  position: absolute;
+  top: -8px;
+  left: 0;
+}
+
+.drawer-toggle .icon::after {
+  position: absolute;
+  top: 8px;
+  left: 0;
+}
+
+.drawer-toggle.open .icon {
+  background: transparent;
+}
+
+.drawer-toggle.open .icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.drawer-toggle.open .icon::after {
+  top: 0;
+  transform: rotate(-45deg);
+}

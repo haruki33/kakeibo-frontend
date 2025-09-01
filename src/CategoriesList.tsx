@@ -127,7 +127,7 @@ export default function CategoriesList({
         size="sm"
       >
         <Card.Body>
-          <Flex justify="space-between" pb="4">
+          <Flex justify="space-between" pb="4" align="center">
             <Card.Title>カテゴリ一覧</Card.Title>
             <Box flex="1" />
             <Button
