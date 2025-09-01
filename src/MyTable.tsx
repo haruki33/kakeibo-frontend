@@ -135,7 +135,7 @@ export default function MyTable() {
     <>
       <Card.Root m="4" variant="outline">
         <Card.Header>
-          <Flex justify="space-between">
+          <Flex justify="space-between" align="center">
             <Card.Title textStyle={{ base: "xs", md: "md" }}>
               年間収支記録
             </Card.Title>

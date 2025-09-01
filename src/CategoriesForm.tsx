@@ -77,7 +77,7 @@ export default function CategoriesForm({
         // minH="500px"
         size="sm"
       >
-        <Card.Header>
+        <Card.Header pb="4">
           <Card.Title>カテゴリー追加</Card.Title>
         </Card.Header>
         <Card.Body>
