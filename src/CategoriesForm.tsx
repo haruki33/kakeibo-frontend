@@ -23,7 +23,7 @@ export default function CategoriesForm({
   const [name, setName] = useState<string>("給料");
   const [type, setType] = useState<string>("income");
   const [description, setDescription] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,17 +56,15 @@ export default function CategoriesForm({
 
       const createdCategory = await res.json();
       addCategories(createdCategory);
-      setName("給料");
-      setType("income");
-      setDescription("");
     } catch (error) {
       console.error("Error creating category:", error);
     } finally {
+      setName("給料");
+      setType("income");
+      setDescription("");
       setLoading(false);
     }
   };
-
-  if (loading) return <p>Loading...</p>;
 
   return (
     <>
@@ -136,9 +134,11 @@ export default function CategoriesForm({
         </Card.Body>
         <Card.Footer>
           <Button
+            loading={loading}
             colorPalette="green"
             type="submit"
             onClick={(e) => handleSubmit(e)}
+            loadingText="登録中..."
             w="full"
           >
             登録

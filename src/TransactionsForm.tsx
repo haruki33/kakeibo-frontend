@@ -41,6 +41,7 @@ export default function TransactionsForm({
   const [type, setType] = useState<string>("expense");
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const categoriesCollection = createListCollection({
     items: categories.map((category) => ({
@@ -65,6 +66,7 @@ export default function TransactionsForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const newTransaction: TransactionForm = {
       date,
@@ -94,9 +96,11 @@ export default function TransactionsForm({
 
       const createdTransaction = await res.json();
       addTransaction(createdTransaction);
-      setIsDialogOpen(false);
     } catch (error) {
       console.error("Error creating transaction:", error);
+    } finally {
+      setIsDialogOpen(false);
+      setLoading(false);
     }
   };
 
@@ -151,7 +155,12 @@ export default function TransactionsForm({
               </VStack>
             </Dialog.Body>
             <Dialog.Footer>
-              <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+              <Button
+                loading={loading}
+                colorPalette="green"
+                onClick={(e) => handleSubmit(e)}
+                loadingText="保存中..."
+              >
                 保存
               </Button>
             </Dialog.Footer>

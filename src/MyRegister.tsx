@@ -3,7 +3,16 @@ import { useEffect, useState } from "react";
 import Calendar from "./Calendar.tsx";
 import TransactionsList from "./TransactionsList.tsx";
 import TransactionsForm from "./TransactionsForm.tsx";
-import { Box, Button, Card, Dialog, Stack, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  Dialog,
+  Flex,
+  Spinner,
+  Stack,
+  VStack,
+} from "@chakra-ui/react";
 
 import type { Category, Transaction } from "./components/types/myregister.ts";
 
@@ -17,6 +26,8 @@ function MyRegister() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isLoadingTransactions, setIsLoadingTransactions] =
+    useState<boolean>(false);
 
   const addTransaction = (newTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) => [...prev, newTransaction]);
@@ -48,6 +59,7 @@ function MyRegister() {
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    setIsLoadingTransactions(true);
     fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`)
       .then((res) => res.json())
       .then((data) => {
@@ -55,6 +67,9 @@ function MyRegister() {
       })
       .catch((e) => {
         console.error("Failed to fetch transactions", e);
+      })
+      .finally(() => {
+        setIsLoadingTransactions(false);
       });
   }, [selectedYearAndMonth]);
 
@@ -89,15 +104,21 @@ function MyRegister() {
           >
             <Card.Body>
               <Card.Title>お金の記録</Card.Title>
-              <Box maxH={{ base: "30vh", md: "400px" }} overflowY="auto">
-                <TransactionsList
-                  categories={categories}
-                  transactions={transactions}
-                  selectedDate={selectedDate}
-                  deleteTransaction={deleteTransaction}
-                  updateTransaction={updatedTransaction}
-                />
-              </Box>
+              {isLoadingTransactions ? (
+                <Flex justify="center" align="center" h="100%">
+                  <Spinner color="blue.500" animationDuration="0.8s" />
+                </Flex>
+              ) : (
+                <Box maxH={{ base: "30vh", md: "400px" }} overflowY="auto">
+                  <TransactionsList
+                    categories={categories}
+                    transactions={transactions}
+                    selectedDate={selectedDate}
+                    deleteTransaction={deleteTransaction}
+                    updateTransaction={updatedTransaction}
+                  />
+                </Box>
+              )}
             </Card.Body>
             <Dialog.Root
               open={isDialogOpen}
