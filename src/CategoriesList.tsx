@@ -15,18 +15,21 @@ import {
   Card,
   Box,
   Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import type { Category } from "./components/types/mysetting.ts";
 import { MdRestoreFromTrash } from "react-icons/md";
 
 type categoriesListProps = {
+  isLoadingCategories: boolean;
   categories: Category[];
   updateCategories: (category: Category) => void;
   deleteCategories: (id: string) => void;
 };
 
 export default function CategoriesList({
+  isLoadingCategories,
   categories,
   updateCategories,
   deleteCategories,
@@ -35,6 +38,7 @@ export default function CategoriesList({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeletedCategoriesDialogOpen, setIsDeletedCategoriesDialogOpen] =
     useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const deleteCategory = async (category: Category) => {
     if (!confirm("本当に削除しますか？")) return;
@@ -56,9 +60,11 @@ export default function CategoriesList({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!editTarget) {
       alert("編集対象のカテゴリが選択されていません");
+      setLoading(false);
       return;
     }
 
@@ -76,14 +82,16 @@ export default function CategoriesList({
       if (!res.ok) throw new Error("更新失敗");
 
       updateCategories(editTarget);
-      setIsEditDialogOpen(false);
     } catch (err) {
       console.error(err);
       alert("カテゴリ更新に失敗しました");
+    } finally {
+      setIsEditDialogOpen(false);
+      setLoading(false);
     }
   };
 
-  const deletedeletedCategory = async (category: Category) => {
+  const deleteDeletedCategory = async (category: Category) => {
     if (!confirm("完全に削除されます，よろしいですか？")) return;
 
     try {
@@ -138,54 +146,65 @@ export default function CategoriesList({
               削除済みを表示
             </Button>
           </Flex>
-          <Box maxH={{ base: "45vh", md: "70vh" }} overflowY="auto">
-            <Table.Root>
-              <Table.Body>
-                {categories
-                  .filter((cat) => !cat.is_deleted)
-                  .map((cat) => (
-                    <Table.Row key={cat.id}>
-                      <Table.Cell textAlign={"left"}>
-                        <Text
-                          color={cat.type === "income" ? "#60A5FA" : "#F87171"}
-                        >
-                          {cat.name}
-                        </Text>
-                        {cat.description?.length > 0 && (
+          {isLoadingCategories ? (
+            <Flex justify="center" align="center" h="100%">
+              <Spinner color="blue.500" animationDuration="0.8s" />
+            </Flex>
+          ) : (
+            <Box maxH={{ base: "45vh", md: "70vh" }} overflowY="auto">
+              <Table.Root>
+                <Table.Body>
+                  {categories
+                    .filter((cat) => !cat.is_deleted)
+                    .map((cat) => (
+                      <Table.Row key={cat.id}>
+                        <Table.Cell textAlign={"left"}>
                           <Text
-                            fontSize="xs"
-                            color="gray.500"
-                            whiteSpace="pre-line"
+                            color={
+                              cat.type === "income" ? "#60A5FA" : "#F87171"
+                            }
                           >
-                            {cat.description.replace(/(.{20})/g, "$1\n")}
+                            {cat.name}
                           </Text>
-                        )}
-                      </Table.Cell>
+                          {cat.description?.length > 0 && (
+                            <Text
+                              fontSize="xs"
+                              color="gray.500"
+                              whiteSpace="pre-line"
+                            >
+                              {cat.description.replace(/(.{20})/g, "$1\n")}
+                            </Text>
+                          )}
+                        </Table.Cell>
 
-                      <Table.Cell>
-                        <Flex flexDirection={"row"} justifyContent={"flex-end"}>
-                          <IconButton
-                            color="green"
-                            variant="ghost"
-                            onClick={() => handleEditClick(cat)}
+                        <Table.Cell>
+                          <Flex
+                            flexDirection={"row"}
+                            justifyContent={"flex-end"}
                           >
-                            <AiFillEdit />
-                          </IconButton>
+                            <IconButton
+                              color="green"
+                              variant="ghost"
+                              onClick={() => handleEditClick(cat)}
+                            >
+                              <AiFillEdit />
+                            </IconButton>
 
-                          <IconButton
-                            color="#F87171"
-                            variant="ghost"
-                            onClick={() => deleteCategory(cat)}
-                          >
-                            <AiFillDelete />
-                          </IconButton>
-                        </Flex>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-              </Table.Body>
-            </Table.Root>
-          </Box>
+                            <IconButton
+                              color="#F87171"
+                              variant="ghost"
+                              onClick={() => deleteCategory(cat)}
+                            >
+                              <AiFillDelete />
+                            </IconButton>
+                          </Flex>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                </Table.Body>
+              </Table.Root>
+            </Box>
+          )}
         </Card.Body>
       </Card.Root>
 
@@ -242,7 +261,12 @@ export default function CategoriesList({
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+                <Button
+                  loading={loading}
+                  colorPalette="green"
+                  onClick={(e) => handleSubmit(e)}
+                  loadingText="保存中..."
+                >
                   保存
                 </Button>
               </Dialog.Footer>
@@ -307,7 +331,7 @@ export default function CategoriesList({
                               <IconButton
                                 color="#F87171"
                                 variant="ghost"
-                                onClick={() => deletedeletedCategory(cat)}
+                                onClick={() => deleteDeletedCategory(cat)}
                               >
                                 <AiFillDelete />
                               </IconButton>

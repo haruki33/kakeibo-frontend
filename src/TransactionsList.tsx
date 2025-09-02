@@ -34,6 +34,7 @@ export default function TransactionsList({
 }: TransactionsListProps) {
   const [editTarget, setEditTarget] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const categoriesCollection = createListCollection({
     items: categories.map((category) => ({
@@ -75,6 +76,7 @@ export default function TransactionsList({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!editTarget) {
       alert("編集対象のカテゴリが選択されていません");
@@ -97,16 +99,18 @@ export default function TransactionsList({
       if (!res.ok) throw new Error("更新失敗");
 
       updateTransaction(editTarget);
-      setIsDialogOpen(false);
-      setEditTarget(null);
     } catch (err) {
       console.error(err);
       alert("更新に失敗しました");
+    } finally {
+      setEditTarget(null);
+      setIsDialogOpen(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div>
+    <>
       <Table.Root>
         {transactions.filter((tx) => tx.date.slice(0, 10) === selectedDate)
           .length === 0 ? (
@@ -236,7 +240,12 @@ export default function TransactionsList({
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button colorPalette="green" onClick={(e) => handleSubmit(e)}>
+                <Button
+                  loading={loading}
+                  colorPalette="green"
+                  onClick={(e) => handleSubmit(e)}
+                  loadingText="保存中..."
+                >
                   保存
                 </Button>
               </Dialog.Footer>
@@ -244,7 +253,7 @@ export default function TransactionsList({
           </Dialog.Positioner>
         </Portal>
       </Dialog.Root>
-    </div>
+    </>
   );
 
   function DialogCategoriesSelect() {

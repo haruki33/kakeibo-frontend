@@ -7,6 +7,8 @@ import type { Category } from "./components/types/mysetting.ts";
 
 function MySetting() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] =
+    useState<boolean>(false);
 
   const addCategories = (newCategories: Category) => {
     setCategories((prev: Category[]) => [...prev, newCategories]);
@@ -26,6 +28,7 @@ function MySetting() {
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    setIsLoadingCategories(true);
     fetch(`${baseUrl}/categories`)
       .then((res) => res.json())
       .then((data) => {
@@ -33,6 +36,9 @@ function MySetting() {
       })
       .catch((e) => {
         console.error("Failed to fetch categories", e);
+      })
+      .finally(() => {
+        setIsLoadingCategories(false);
       });
   }, []);
 
@@ -47,6 +53,7 @@ function MySetting() {
       >
         <CategoriesForm categories={categories} addCategories={addCategories} />
         <CategoriesList
+          isLoadingCategories={isLoadingCategories}
           categories={categories}
           updateCategories={updatedCategory}
           deleteCategories={deleteCategories}
