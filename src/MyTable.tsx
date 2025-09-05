@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-
 import type { Category } from "./components/types/mytable.ts";
 import { Table, Card, Flex, Switch } from "@chakra-ui/react";
+import MyPopover from "./MyPopover.tsx";
+// import type { Transaction } from "./components/types/myregister.ts";
 
 type AmountPerCategoryPerMonth = {
   month: string;
@@ -78,7 +79,11 @@ export default function MyTable() {
   >([]);
   const [rowsIncome, setRowsIncome] = useState<(string | number)[][]>([]);
   const [rowsExpense, setRowsExpense] = useState<(string | number)[][]>([]);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState<boolean>(false);
+
+  const [clickedCategoryId, setClickedCategoryId] = useState<string>("");
+  const [clickedMonthIdx, setClickedMonthIdx] = useState<number>(0);
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -131,6 +136,20 @@ export default function MyTable() {
     [incomeTotalsPerMonth, expenseTotalsPerMonth]
   );
 
+  const handleClickCell = async (
+    clickedCategory: string | number,
+    clickedMonthIdx: number
+  ) => {
+    const clickedCategoryId = categories.find(
+      (cat) => cat.name === clickedCategory
+    )?.id;
+    console.log(clickedCategoryId, clickedMonthIdx + 1);
+
+    setClickedCategoryId(clickedCategoryId || "");
+    setClickedMonthIdx(clickedMonthIdx);
+    setIsPopoverOpen(true);
+  };
+
   return (
     <>
       <Card.Root m="4" variant="outline">
@@ -168,10 +187,16 @@ export default function MyTable() {
               </Table.Header>
               <Table.Body>
                 {rowsIncome.map((row, rowIdx) => (
-                  <Table.Row key={categories[rowIdx]?.id || rowIdx}>
+                  <Table.Row key={row[0] || rowIdx}>
                     <Table.Cell>{row[0]}</Table.Cell>
                     {row.slice(1).map((cell, cellIdx) => (
-                      <Table.Cell key={cellIdx} align="right">
+                      <Table.Cell
+                        key={cellIdx}
+                        align="right"
+                        onClick={() => {
+                          handleClickCell(row[0], cellIdx);
+                        }}
+                      >
                         {typeof cell === "number"
                           ? Math.floor(cell).toLocaleString()
                           : cell}
@@ -199,7 +224,13 @@ export default function MyTable() {
                   <Table.Row key={categories[rowIdx]?.id || rowIdx}>
                     <Table.Cell>{row[0]}</Table.Cell>
                     {row.slice(1).map((cell, cellIdx) => (
-                      <Table.Cell key={cellIdx} align="right">
+                      <Table.Cell
+                        key={cellIdx}
+                        align="right"
+                        onClick={() => {
+                          handleClickCell(row[0], cellIdx);
+                        }}
+                      >
                         {typeof cell === "number"
                           ? Math.floor(cell).toLocaleString()
                           : cell}
@@ -240,6 +271,16 @@ export default function MyTable() {
           </Table.ScrollArea>
         </Card.Body>
       </Card.Root>
+
+      {isPopoverOpen && (
+        <MyPopover
+          isPopoverOpen={isPopoverOpen}
+          setIsPopoverOpen={setIsPopoverOpen}
+          categories={categories}
+          clickedCategoryId={clickedCategoryId}
+          clickedMonthIdx={clickedMonthIdx}
+        />
+      )}
     </>
   );
 }
