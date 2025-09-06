@@ -103,7 +103,9 @@ function MyRegister() {
             size="sm"
           >
             <Card.Body>
-              <Card.Title>お金の記録</Card.Title>
+              <Card.Title textStyle={{ base: "lg", md: "xl" }} mb="4">
+                お金の記録
+              </Card.Title>
               {isLoadingTransactions ? (
                 <Flex justify="center" align="center" h="100%">
                   <Spinner color="blue.500" animationDuration="0.8s" />

@@ -23,10 +23,10 @@ export default function MyHeader() {
         left="0"
         right="0"
         bg="white"
-        zIndex="1"
+        zIndex="100"
       >
         <Box flex="1" />
-        <Heading size="md" p="4">
+        <Heading size="xl" p="4">
           My Money
         </Heading>
         <Flex flex="1" justifyContent="flex-end">

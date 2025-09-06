@@ -36,10 +36,10 @@ export default function MyDrawer() {
       </div>
 
       <div className={`drawer-nav ${isOpen ? "is-open" : ""}`}>
-        <VStack pt="24" pl="20" align="flex-start" gap="8">
+        <VStack pt="24" pl="16" align="flex-start" gap="8">
           {menu.map((item, index) => (
             <Box key={index}>
-              <Heading size="md">{item.title}</Heading>
+              <Heading size={{ base: "lg", md: "xl" }}>{item.title}</Heading>
               {item.children && (
                 <VStack pt="1">
                   {item.children.map((child, idx) => (
