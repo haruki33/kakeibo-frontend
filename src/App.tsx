@@ -1,10 +1,9 @@
-import { Routes, Route, Outlet } from "react-router";
+import { Routes, Route } from "react-router";
 import MyRegister from "./MyRegister";
 import MyTable from "./MyTable";
 import MySetting from "./MySetting";
 import NoMatch from "./NoMatch";
-import MyHeader from "./MyHeader";
-import { Box } from "@chakra-ui/react";
+import MainLayout from "./MainLayout";
 
 function App() {
   return (
@@ -20,16 +19,5 @@ function App() {
     </>
   );
 }
-
-const MainLayout = () => {
-  return (
-    <>
-      <Box bg="gray.200" minH="100vh">
-        <MyHeader />
-        <Outlet />
-      </Box>
-    </>
-  );
-};
 
 export default App;
