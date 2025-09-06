@@ -155,7 +155,7 @@ export default function MyTable() {
       <Card.Root m="4" variant="outline">
         <Card.Header>
           <Flex justify="space-between" align="center">
-            <Card.Title textStyle={{ base: "xs", md: "md" }}>
+            <Card.Title textStyle={{ base: "lg", md: "xl" }}>
               年間収支記録
             </Card.Title>
             <Switch.Root
@@ -171,28 +171,94 @@ export default function MyTable() {
           </Flex>
         </Card.Header>
         <Card.Body>
-          <Table.ScrollArea borderWidth="1px">
-            <Table.Root size="sm" variant="outline" textSizeAdjust="auto">
+          <Table.ScrollArea borderWidth="1px" overflowX="auto">
+            <Table.Root
+              size="sm"
+              variant="line"
+              css={{
+                "& [data-sticky]": {
+                  position: "sticky",
+                  zIndex: 10, // zIndexを小さい値に設定してMyHeaderより下に表示されるようにする
+
+                  _after: {
+                    content: '""',
+                    position: "absolute",
+                    pointerEvents: "none",
+                    top: "0",
+                    bottom: "-1px",
+                    width: "10px",
+                  },
+                },
+
+                "& [data-sticky=categoriesEnd]": {
+                  bg: "white",
+                  _after: {
+                    insetInlineEnd: "0",
+                    translate: "100% 0",
+                    shadow: "inset 8px 0px 8px -8px rgba(0, 0, 0, 0.16)",
+                  },
+                },
+
+                "& [data-sticky=incomeEnd]": {
+                  bg: "#e9f3ff",
+                  _after: {
+                    insetInlineEnd: "0",
+                    translate: "100% 0",
+                    shadow: "inset 8px 0px 8px -8px rgba(0, 0, 0, 0.16)",
+                  },
+                },
+
+                "& [data-sticky=expenseEnd]": {
+                  bg: "#ffe9e9",
+                  _after: {
+                    insetInlineEnd: "0",
+                    translate: "100% 0",
+                    shadow: "inset 8px 0px 8px -8px rgba(0, 0, 0, 0.16)",
+                  },
+                },
+
+                "& [data-sticky=sumEnd]": {
+                  bg: "#f5f5f5",
+                  _after: {
+                    insetInlineEnd: "0",
+                    translate: "100% 0",
+                    shadow: "inset 8px 0px 8px -8px rgba(0, 0, 0, 0.16)",
+                  },
+                },
+              }}
+            >
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeader>月</Table.ColumnHeader>
+                  <Table.ColumnHeader
+                    data-sticky="categoriesEnd"
+                    minW="30px"
+                    left="0"
+                  >
+                    月
+                  </Table.ColumnHeader>
                   {[...Array(12)].map((_, i) => (
-                    <Table.ColumnHeader key={i + 1} align="right">
+                    <Table.ColumnHeader key={i + 1} textAlign="center">
                       {i + 1}月
                     </Table.ColumnHeader>
                   ))}
-                  <Table.ColumnHeader>合計</Table.ColumnHeader>
-                  <Table.ColumnHeader>平均</Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="center">
+                    合計
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="center">
+                    平均
+                  </Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
                 {rowsIncome.map((row, rowIdx) => (
                   <Table.Row key={row[0] || rowIdx}>
-                    <Table.Cell>{row[0]}</Table.Cell>
+                    <Table.Cell data-sticky="categoriesEnd" left="0">
+                      {row[0]}
+                    </Table.Cell>
                     {row.slice(1).map((cell, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
-                        align="right"
+                        textAlign="right"
                         onClick={() => {
                           handleClickCell(row[0], cellIdx);
                         }}
@@ -206,12 +272,20 @@ export default function MyTable() {
                 ))}
 
                 {incomeTotalsPerMonth.length > 0 && (
-                  <Table.Row backgroundColor="#e9f3ffff" fontWeight="bold">
-                    <Table.Cell fontWeight="bold">
+                  <Table.Row backgroundColor="#e9f3ff" fontWeight="bold">
+                    <Table.Cell
+                      fontWeight="bold"
+                      data-sticky="incomeEnd"
+                      left="0"
+                    >
                       {incomeTotalsPerMonth[0]}
                     </Table.Cell>
                     {incomeTotalsPerMonth.slice(1).map((total, cellIdx) => (
-                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                      <Table.Cell
+                        key={cellIdx}
+                        textAlign="right"
+                        fontWeight="bold"
+                      >
                         {typeof total === "number"
                           ? Math.floor(total).toLocaleString()
                           : total}
@@ -222,11 +296,13 @@ export default function MyTable() {
 
                 {rowsExpense.map((row, rowIdx) => (
                   <Table.Row key={categories[rowIdx]?.id || rowIdx}>
-                    <Table.Cell>{row[0]}</Table.Cell>
+                    <Table.Cell data-sticky="categoriesEnd" left="0">
+                      {row[0]}
+                    </Table.Cell>
                     {row.slice(1).map((cell, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
-                        align="right"
+                        textAlign="right"
                         onClick={() => {
                           handleClickCell(row[0], cellIdx);
                         }}
@@ -240,12 +316,20 @@ export default function MyTable() {
                 ))}
 
                 {expenseTotalsPerMonth.length > 0 && (
-                  <Table.Row backgroundColor="#ffe9e9ff" fontWeight="bold">
-                    <Table.Cell fontWeight="bold">
+                  <Table.Row backgroundColor="#ffe9e9" fontWeight="bold">
+                    <Table.Cell
+                      fontWeight="bold"
+                      data-sticky="expenseEnd"
+                      left="0"
+                    >
                       {expenseTotalsPerMonth[0]}
                     </Table.Cell>
                     {expenseTotalsPerMonth.slice(1).map((total, cellIdx) => (
-                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                      <Table.Cell
+                        key={cellIdx}
+                        textAlign="right"
+                        fontWeight="bold"
+                      >
                         {typeof total === "number"
                           ? Math.floor(total).toLocaleString()
                           : total}
@@ -256,9 +340,15 @@ export default function MyTable() {
 
                 {BOP.length > 0 && (
                   <Table.Row backgroundColor="#f5f5f5" fontWeight="bold">
-                    <Table.Cell fontWeight="bold">{BOP[0]}</Table.Cell>
+                    <Table.Cell fontWeight="bold" data-sticky="sumEnd" left="0">
+                      {BOP[0]}
+                    </Table.Cell>
                     {BOP.slice(1).map((total, cellIdx) => (
-                      <Table.Cell key={cellIdx} align="right" fontWeight="bold">
+                      <Table.Cell
+                        key={cellIdx}
+                        textAlign="right"
+                        fontWeight="bold"
+                      >
                         {typeof total === "number"
                           ? Math.floor(total).toLocaleString()
                           : total}
