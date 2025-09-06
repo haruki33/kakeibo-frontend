@@ -1,11 +1,10 @@
 import { useState } from "react";
 import "./MyDrawer.css";
-import { Box, VStack, Heading, Link } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, VStack, Heading } from "@chakra-ui/react";
+import { Link } from "react-router";
 
 export default function MyDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   const menu = [
     {
@@ -17,12 +16,6 @@ export default function MyDrawer() {
   const handleClick = () => {
     setIsOpen((prev) => !prev);
   };
-
-  const handleNavigate = (path: string) => {
-    setIsOpen(false);
-    navigate(path);
-  };
-
   return (
     <>
       <div className="drawer-btn-wrapper">
@@ -43,7 +36,11 @@ export default function MyDrawer() {
               {item.children && (
                 <VStack pt="1">
                   {item.children.map((child, idx) => (
-                    <Link key={idx} onClick={() => handleNavigate(child.path)}>
+                    <Link
+                      key={idx}
+                      to={child.path}
+                      onClick={() => setIsOpen(false)}
+                    >
                       {child.label}
                     </Link>
                   ))}

@@ -1,30 +1,35 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router";
 import MyRegister from "./MyRegister";
 import MyTable from "./MyTable";
 import MySetting from "./MySetting";
-import Layout from "./Layout";
-
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <Layout />,
-      children: [
-        { index: true, element: <MyRegister /> },
-        { path: "MyTable", element: <MyTable /> },
-        { path: "MySetting", element: <MySetting /> },
-      ],
-    },
-  ],
-  {
-    future: {
-      v7_fetcherPersist: true,
-    },
-  }
-);
+import NoMatch from "./NoMatch";
+import MyHeader from "./MyHeader";
+import { Box } from "@chakra-ui/react";
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route index element={<MyRegister />} />
+          <Route path="MyTable" element={<MyTable />} />
+          <Route path="MySetting" element={<MySetting />} />
+        </Route>
+        <Route path="*" element={<NoMatch />} />
+      </Routes>
+    </>
+  );
 }
+
+const MainLayout = () => {
+  return (
+    <>
+      <Box bg="gray.200" minH="100vh">
+        <MyHeader />
+        <Outlet />
+      </Box>
+    </>
+  );
+};
 
 export default App;
