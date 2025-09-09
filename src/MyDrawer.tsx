@@ -1,11 +1,12 @@
 import { useState } from "react";
 import "./MyDrawer.css";
-import { Box, VStack, Heading, Link } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, VStack, Heading } from "@chakra-ui/react";
+import { Link } from "react-router";
+import { useAuth } from "./useAuth";
 
 export default function MyDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const { onLogout } = useAuth();
 
   const menu = [
     {
@@ -16,11 +17,6 @@ export default function MyDrawer() {
 
   const handleClick = () => {
     setIsOpen((prev) => !prev);
-  };
-
-  const handleNavigate = (path: string) => {
-    setIsOpen(false);
-    navigate(path);
   };
 
   return (
@@ -43,7 +39,11 @@ export default function MyDrawer() {
               {item.children && (
                 <VStack pt="1">
                   {item.children.map((child, idx) => (
-                    <Link key={idx} onClick={() => handleNavigate(child.path)}>
+                    <Link
+                      key={idx}
+                      to={child.path}
+                      onClick={() => setIsOpen(false)}
+                    >
                       {child.label}
                     </Link>
                   ))}
@@ -51,6 +51,11 @@ export default function MyDrawer() {
               )}
             </Box>
           ))}
+          <Box pb="8">
+            <Link to="/" onClick={onLogout}>
+              <Heading size={{ base: "lg", md: "xl" }}>ログアウト</Heading>
+            </Link>
+          </Box>
         </VStack>
       </div>
 

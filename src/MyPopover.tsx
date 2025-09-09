@@ -36,8 +36,23 @@ export default function MyPopover({
       setIsLoading(true);
       try {
         const res = await fetch(
-          `${baseUrl}/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`
+          `${baseUrl}/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
         );
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Response status:", res.status);
+          console.error("Response body:", errorText);
+          throw new Error(
+            `Failed to fetch transactions: ${res.status} - ${errorText}`
+          );
+        }
         const data: Transaction[] = await res.json();
         setPopoverTransaction(data);
       } catch (e) {
