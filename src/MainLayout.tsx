@@ -5,7 +5,7 @@ import { type NavLinkRenderProps, NavLink, Outlet } from "react-router";
 const pages = [
   {
     page: "登録",
-    path: "/",
+    path: "/MyRegister",
   },
   {
     page: "統計",
@@ -18,7 +18,7 @@ export default function MainLayout() {
     paddingBottom: "8px",
     height: "100%",
     width: "100%",
-    borderBottom: isActive ? "3px solid #60A5FA" : "3px solid transparent",
+    borderBottom: isActive ? "3px solid #c5ecca" : "3px solid transparent",
     textAlign: "center" as const,
   });
 

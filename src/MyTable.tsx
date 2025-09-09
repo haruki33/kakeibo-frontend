@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import type { Category } from "./components/types/mytable.ts";
 import { Table, Card, Flex, Switch } from "@chakra-ui/react";
 import MyPopover from "./MyPopover.tsx";
-// import type { Transaction } from "./components/types/myregister.ts";
 
 type AmountPerCategoryPerMonth = {
   month: string;
@@ -87,8 +86,15 @@ export default function MyTable() {
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
+    fetch(`${baseUrl}/categories`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
       .then((data: Category[]) => {
         setCategories(data);
       })
@@ -97,8 +103,15 @@ export default function MyTable() {
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/transactions/summary?year=${new Date().getFullYear()}`)
-      .then((res) => res.json())
+    fetch(`${baseUrl}/transactions/summary?year=${new Date().getFullYear()}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
       .then((data: AmountPerCategoryPerMonth[]) => {
         setAmountPerCategoryPerMonth(data);
       })
@@ -143,7 +156,6 @@ export default function MyTable() {
     const clickedCategoryId = categories.find(
       (cat) => cat.name === clickedCategory
     )?.id;
-    console.log(clickedCategoryId, clickedMonthIdx + 1);
 
     setClickedCategoryId(clickedCategoryId || "");
     setClickedMonthIdx(clickedMonthIdx);
@@ -251,7 +263,7 @@ export default function MyTable() {
               </Table.Header>
               <Table.Body>
                 {rowsIncome.map((row, rowIdx) => (
-                  <Table.Row key={row[0] || rowIdx}>
+                  <Table.Row key={rowIdx}>
                     <Table.Cell data-sticky="categoriesEnd" left="0">
                       {row[0]}
                     </Table.Cell>
@@ -295,7 +307,7 @@ export default function MyTable() {
                 )}
 
                 {rowsExpense.map((row, rowIdx) => (
-                  <Table.Row key={categories[rowIdx]?.id || rowIdx}>
+                  <Table.Row key={rowIdx}>
                     <Table.Cell data-sticky="categoriesEnd" left="0">
                       {row[0]}
                     </Table.Cell>

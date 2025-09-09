@@ -47,8 +47,12 @@ export default function CategoriesList({
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${category.id}/delete`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
+
       if (!res.ok) throw new Error("Failed to delete category");
 
       const deletedCategory = await res.json();
@@ -72,7 +76,10 @@ export default function CategoriesList({
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${editTarget.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
         body: JSON.stringify({
           name: editTarget.name,
           type: editTarget.type,
@@ -98,8 +105,12 @@ export default function CategoriesList({
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/categories/${category.id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
+
       if (!res.ok) throw new Error("Failed to delete category");
       deleteCategories(category.id);
     } catch (error) {

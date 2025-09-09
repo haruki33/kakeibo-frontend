@@ -29,8 +29,15 @@ function MySetting() {
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     setIsLoadingCategories(true);
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
+    fetch(`${baseUrl}/categories`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
       .then((data) => {
         setCategories(data);
       })

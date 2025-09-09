@@ -49,8 +49,15 @@ function MyRegister() {
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`)
-      .then((res) => res.json())
+    fetch(`${baseUrl}/categories`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
       .then((data: Category[]) => {
         setCategories(data);
       })
@@ -60,8 +67,15 @@ function MyRegister() {
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     setIsLoadingTransactions(true);
-    fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`)
-      .then((res) => res.json())
+    fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
       .then((data) => {
         setTransactions(data);
       })
@@ -107,7 +121,7 @@ function MyRegister() {
                 お金の記録
               </Card.Title>
               {isLoadingTransactions ? (
-                <Flex justify="center" align="center" h="100%">
+                <Flex justify="center" align="center" h="100%" minH="200px">
                   <Spinner color="blue.500" animationDuration="0.8s" />
                 </Flex>
               ) : (

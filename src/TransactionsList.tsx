@@ -41,6 +41,7 @@ export default function TransactionsList({
       value: category.id,
       label: category.name,
       category: category.type,
+      is_deleted: category.is_deleted,
     })),
   });
 
@@ -65,6 +66,10 @@ export default function TransactionsList({
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/transactions/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
       if (!res.ok) throw new Error("Failed to delete transaction");
 
@@ -87,7 +92,10 @@ export default function TransactionsList({
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/transactions/${editTarget.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
         body: JSON.stringify({
           date: editTarget.date,
           amount: editTarget.amount,
@@ -290,12 +298,14 @@ export default function TransactionsList({
                 >
                   {category === "income" ? "収入" : "支出"}
                 </Select.ItemGroupLabel>
-                {items.map((item) => (
-                  <Select.Item item={item} key={item.value}>
-                    {item.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
+                {items
+                  .filter((item) => !item.is_deleted)
+                  .map((item, itemIdx) => (
+                    <Select.Item item={item} key={itemIdx}>
+                      {item.label}
+                      <Select.ItemIndicator />
+                    </Select.Item>
+                  ))}
               </Select.ItemGroup>
             ))}
           </Select.Content>

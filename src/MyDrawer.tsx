@@ -2,9 +2,11 @@ import { useState } from "react";
 import "./MyDrawer.css";
 import { Box, VStack, Heading } from "@chakra-ui/react";
 import { Link } from "react-router";
+import { useAuth } from "./useAuth";
 
 export default function MyDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const { onLogout } = useAuth();
 
   const menu = [
     {
@@ -16,6 +18,7 @@ export default function MyDrawer() {
   const handleClick = () => {
     setIsOpen((prev) => !prev);
   };
+
   return (
     <>
       <div className="drawer-btn-wrapper">
@@ -48,6 +51,11 @@ export default function MyDrawer() {
               )}
             </Box>
           ))}
+          <Box pb="8">
+            <Link to="/" onClick={onLogout}>
+              <Heading size={{ base: "lg", md: "xl" }}>ログアウト</Heading>
+            </Link>
+          </Box>
         </VStack>
       </div>
 
