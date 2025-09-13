@@ -1,14 +1,23 @@
 import { Button, Card, Field, Input, Stack } from "@chakra-ui/react";
-import { useAuth } from "./useAuth";
+import { useState } from "react";
+import { useAuth } from "./utils/useAuth";
+
 export default function Signin() {
   const { email, password, setEmail, setPassword, onLogin } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    await onLogin();
+    setLoading(false);
+  };
 
   return (
     <>
       <Card.Root h="100%" w="100%" variant="subtle" bg="white">
-        <Card.Header>
+        {/* <Card.Header>
           <Card.Title>ログイン</Card.Title>
-        </Card.Header>
+        </Card.Header> */}
         <Card.Body>
           <Stack gap="4" w="full">
             <Field.Root required>
@@ -39,7 +48,13 @@ export default function Signin() {
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Button variant="solid" onClick={onLogin}>
+          <Button
+            variant="solid"
+            onClick={handleLogin}
+            loading={loading}
+            loadingText="ログイン中..."
+            colorPalette="green"
+          >
             ログイン
           </Button>
         </Card.Footer>

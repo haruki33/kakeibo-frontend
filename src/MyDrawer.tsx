@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./MyDrawer.css";
 import { Box, VStack, Heading } from "@chakra-ui/react";
 import { Link } from "react-router";
-import { useAuth } from "./useAuth";
+import { useAuth } from "./utils/useAuth";
 
 export default function MyDrawer() {
   const [isOpen, setIsOpen] = useState(false);

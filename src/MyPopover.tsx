@@ -9,6 +9,8 @@ import {
 } from "@chakra-ui/react";
 import type { Category, Transaction } from "./components/types/myregister.ts";
 import { useEffect, useState } from "react";
+import { useAuth } from "./utils/useAuth.tsx";
+import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
 
 type MyPopoverProps = {
   isPopoverOpen: boolean;
@@ -29,40 +31,26 @@ export default function MyPopover({
     []
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    const fetchTransactions = async () => {
+    const loadClickedCellTransactions = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(
-          `${baseUrl}/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
+        const data = await fetchWithAuth(
+          `/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`
         );
-        if (!res.ok) {
-          const errorText = await res.text();
-          console.error("Response status:", res.status);
-          console.error("Response body:", errorText);
-          throw new Error(
-            `Failed to fetch transactions: ${res.status} - ${errorText}`
-          );
-        }
-        const data: Transaction[] = await res.json();
         setPopoverTransaction(data);
-      } catch (e) {
-        console.error("Failed to fetch categories", e);
+      } catch (err) {
+        console.error(err);
+        onLogout();
       } finally {
         setIsLoading(false);
       }
     };
-    fetchTransactions();
-  }, [clickedCategoryId, clickedMonthIdx]);
+
+    loadClickedCellTransactions();
+  }, [onLogout, clickedCategoryId, clickedMonthIdx]);
 
   const handleClose = () => {
     setIsPopoverOpen(false);

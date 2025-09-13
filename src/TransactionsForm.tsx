@@ -10,22 +10,20 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
-import type { Category, Transaction } from "./components/types/myregister.ts";
+import type {
+  Category,
+  PostTransaction,
+  Transaction,
+} from "./components/types/myregister.ts";
 import { groupBy } from "es-toolkit";
+import { useAuth } from "./utils/useAuth.tsx";
+import { postWithAuth } from "./utils/postWithAuth.tsx";
 
 type TransactionsFormProps = {
   categories: Category[];
   selectedDate: string;
   addTransaction: (newTransaction: Transaction) => void;
   setIsDialogOpen: (isOpen: boolean) => void;
-};
-
-type TransactionForm = {
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
 };
 
 export default function TransactionsForm({
@@ -42,6 +40,7 @@ export default function TransactionsForm({
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   const categoriesCollection = createListCollection({
     items: categories.map((category) => ({
@@ -68,7 +67,7 @@ export default function TransactionsForm({
     e.preventDefault();
     setLoading(true);
 
-    const newTransaction: TransactionForm = {
+    const newTransaction: PostTransaction = {
       date,
       amount,
       type,
@@ -77,28 +76,11 @@ export default function TransactionsForm({
     };
 
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/transactions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify(newTransaction),
-      });
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Response status:", res.status);
-        console.error("Response body:", errorText);
-        throw new Error(
-          `Failed to create transaction: ${res.status} - ${errorText}`
-        );
-      }
-
-      const createdTransaction = await res.json();
-      addTransaction(createdTransaction);
-    } catch (error) {
-      console.error("Error creating transaction:", error);
+      const data = await postWithAuth("/transactions", newTransaction);
+      addTransaction(data);
+    } catch (err) {
+      console.error(err);
+      onLogout();
     } finally {
       setIsDialogOpen(false);
       setLoading(false);
@@ -158,7 +140,7 @@ export default function TransactionsForm({
             <Dialog.Footer>
               <Button
                 loading={loading}
-                colorPalette="green"
+                colorPalette="teal"
                 onClick={(e) => handleSubmit(e)}
                 loadingText="保存中..."
               >

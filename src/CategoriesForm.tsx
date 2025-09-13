@@ -10,6 +10,8 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import type { Category, AddCategory } from "./components/types/mysetting.ts";
+import { useAuth } from "./utils/useAuth.tsx";
+import { postWithAuth } from "./utils/postWithAuth.tsx";
 
 type CategoriesFormProps = {
   categories: Category[];
@@ -24,6 +26,7 @@ export default function CategoriesForm({
   const [type, setType] = useState<string>("income");
   const [description, setDescription] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,30 +44,46 @@ export default function CategoriesForm({
       description,
     };
 
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/categories`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify(newCategory),
-      });
-      if (!res.ok) {
-        throw new Error("Failed to create category");
+    const postCategory = async () => {
+      try {
+        const data = await postWithAuth("/categories", newCategory);
+        addCategories(data);
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      } finally {
+        setName("給料");
+        setType("income");
+        setDescription("");
+        setLoading(false);
       }
+    };
 
-      const createdCategory = await res.json();
-      addCategories(createdCategory);
-    } catch (error) {
-      console.error("Error creating category:", error);
-    } finally {
-      setName("給料");
-      setType("income");
-      setDescription("");
-      setLoading(false);
-    }
+    postCategory();
+    // try {
+    //   const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    //   const res = await fetch(`${baseUrl}/categories`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    //     },
+    //     body: JSON.stringify(newCategory),
+    //   });
+    //   if (!res.ok) {
+    //     throw new Error("Failed to create category");
+    //   }
+
+    //   const createdCategory = await res.json();
+    //   addCategories(createdCategory);
+    // } catch (error) {
+    //   console.error("Error creating category:", error);
+    // } finally {
+    //   setName("給料");
+    //   setType("income");
+    //   setDescription("");
+    //   setLoading(false);
+    // }
   };
 
   return (
