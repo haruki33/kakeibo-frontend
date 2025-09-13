@@ -4,11 +4,14 @@ import CategoriesList from "./CategoriesList";
 import { Stack } from "@chakra-ui/react";
 
 import type { Category } from "./components/types/mysetting.ts";
+import { useAuth } from "./utils/useAuth.tsx";
+import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
 
 function MySetting() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] =
     useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   const addCategories = (newCategories: Category) => {
     setCategories((prev: Category[]) => [...prev, newCategories]);
@@ -27,27 +30,21 @@ function MySetting() {
   };
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    setIsLoadingCategories(true);
-    fetch(`${baseUrl}/categories`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
+    const loadCategories = async () => {
+      setIsLoadingCategories(true);
+      try {
+        const data = await fetchWithAuth("/categories");
         setCategories(data);
-      })
-      .catch((e) => {
-        console.error("Failed to fetch categories", e);
-      })
-      .finally(() => {
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      } finally {
         setIsLoadingCategories(false);
-      });
-  }, []);
+      }
+    };
+
+    loadCategories();
+  }, [onLogout]);
 
   return (
     <>

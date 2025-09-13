@@ -45,9 +45,9 @@ export default function Signup() {
   return (
     <>
       <Card.Root h="100%" w="100%" variant="subtle" bg="white">
-        <Card.Header>
+        {/* <Card.Header>
           <Card.Title>新規登録</Card.Title>
-        </Card.Header>
+        </Card.Header> */}
         <Card.Body>
           <Stack gap="4" w="full">
             <Field.Root required>

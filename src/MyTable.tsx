@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import type { Category } from "./components/types/mytable.ts";
 import { Table, Card, Flex, Switch } from "@chakra-ui/react";
 import MyPopover from "./MyPopover.tsx";
+import { useAuth } from "./utils/useAuth.tsx";
+import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
 
 type AmountPerCategoryPerMonth = {
   month: string;
@@ -83,40 +85,37 @@ export default function MyTable() {
   const [clickedCategoryId, setClickedCategoryId] = useState<string>("");
   const [clickedMonthIdx, setClickedMonthIdx] = useState<number>(0);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data: Category[]) => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchWithAuth("/categories");
         setCategories(data);
-      })
-      .catch((e) => console.error("Failed to fetch categories", e));
-  }, []);
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      }
+    };
+
+    loadCategories();
+  }, [onLogout]);
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/transactions/summary?year=${new Date().getFullYear()}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data: AmountPerCategoryPerMonth[]) => {
+    const loadTransactionsSummary = async () => {
+      try {
+        const data = await fetchWithAuth(
+          `/transactions/summary?year=${new Date().getFullYear()}`
+        );
         setAmountPerCategoryPerMonth(data);
-      })
-      .catch((e) => console.error("Failed to fetch categories", e));
-  }, [categories]);
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      }
+    };
+
+    loadTransactionsSummary();
+  }, [onLogout]);
 
   useEffect(() => {
     const filteredCategories = checked

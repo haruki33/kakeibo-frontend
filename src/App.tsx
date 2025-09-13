@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router";
 
 import { AuthContext } from "./AuthContext";
-import { useAuth } from "./useAuth";
+import { useAuth } from "./utils/useAuth";
 
 import LoginLayout from "./LoginLayout";
 import Signin from "./Signin";
@@ -37,6 +37,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(`${baseUrl}/signin`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -90,13 +91,19 @@ const ProtectedRoute = ({ children }: ProtectedRouteType) => {
   return children;
 };
 
+// ログイン状態に基づいてリダイレクトするコンポーネント
+const RedirectBasedOnAuth = () => {
+  const { token } = useAuth();
+  return token ? <Navigate to="/MyRegister" replace /> : <Signin />;
+};
+
 function App() {
   return (
     <>
       <AuthProvider>
         <Routes>
           <Route element={<LoginLayout />}>
-            <Route index element={<Signin />} />
+            <Route index element={<RedirectBasedOnAuth />} />
             <Route path="signup" element={<Signup />} />
           </Route>
           <Route element={<MainLayout />}>

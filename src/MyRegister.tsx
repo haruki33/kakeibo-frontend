@@ -15,6 +15,8 @@ import {
 } from "@chakra-ui/react";
 
 import type { Category, Transaction } from "./components/types/myregister.ts";
+import { useAuth } from "./utils/useAuth.tsx";
+import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
 
 function MyRegister() {
   const [selectedYearAndMonth, setSelectedYearAndMonth] = useState(
@@ -28,6 +30,7 @@ function MyRegister() {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isLoadingTransactions, setIsLoadingTransactions] =
     useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   const addTransaction = (newTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) => [...prev, newTransaction]);
@@ -48,44 +51,36 @@ function MyRegister() {
   };
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    fetch(`${baseUrl}/categories`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data: Category[]) => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchWithAuth("/categories");
         setCategories(data);
-      })
-      .catch((e) => console.error("Failed to fetch categories", e));
-  }, []);
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      }
+    };
+
+    loadCategories();
+  }, [onLogout]);
 
   useEffect(() => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    setIsLoadingTransactions(true);
-    fetch(`${baseUrl}/transactions?month=${selectedYearAndMonth}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
+    const loadSelectedTransactions = async () => {
+      setIsLoadingTransactions(true);
+      try {
+        const data = await fetchWithAuth(
+          `/transactions?month=${selectedYearAndMonth}`
+        );
         setTransactions(data);
-      })
-      .catch((e) => {
-        console.error("Failed to fetch transactions", e);
-      })
-      .finally(() => {
-        setIsLoadingTransactions(false);
-      });
-  }, [selectedYearAndMonth]);
+      } catch (err) {
+        console.error(err);
+        onLogout();
+      }
+      setIsLoadingTransactions(false);
+    };
+
+    loadSelectedTransactions();
+  }, [onLogout, selectedYearAndMonth]);
 
   return (
     <>
@@ -142,7 +137,7 @@ function MyRegister() {
               placement="center"
             >
               <Dialog.Trigger asChild>
-                <Button m="4" colorPalette="green" variant="solid">
+                <Button m="4" colorPalette="green" variant="subtle">
                   新しい取引を追加
                 </Button>
               </Dialog.Trigger>

@@ -11,7 +11,7 @@ export default function LoginLayout() {
     paddingBottom: "8px",
     height: "100%",
     width: "100%",
-    borderBottom: isActive ? "3px solid #60A5FA" : "3px solid transparent",
+    borderBottom: isActive ? "3px solid #c5ecca" : "3px solid transparent",
     textAlign: "center" as const,
   });
 

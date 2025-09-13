@@ -16,6 +16,9 @@ import {
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import type { Category, Transaction } from "./components/types/myregister.ts";
 import { groupBy } from "es-toolkit";
+import { useAuth } from "./utils/useAuth.tsx";
+import { deleteWithAuth } from "./utils/deleteWithAuth.tsx";
+import { putWithAuth } from "./utils/putWithAuth.tsx";
 
 type TransactionsListProps = {
   categories: Category[];
@@ -35,6 +38,7 @@ export default function TransactionsList({
   const [editTarget, setEditTarget] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { onLogout } = useAuth();
 
   const categoriesCollection = createListCollection({
     items: categories.map((category) => ({
@@ -61,21 +65,12 @@ export default function TransactionsList({
 
   const deleteTransactionOnList = async (id: string) => {
     if (!confirm("本当に削除しますか？")) return;
-
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/transactions/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      if (!res.ok) throw new Error("Failed to delete transaction");
-
+      await deleteWithAuth(`/transactions/${id}`);
       deleteTransaction(id);
-    } catch (error) {
-      console.error("Error deleting transaction:", error);
+    } catch (err) {
+      console.error(err);
+      onLogout();
     }
   };
 
@@ -88,28 +83,13 @@ export default function TransactionsList({
       return;
     }
 
+    const { id, ...putTransaction } = editTarget;
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/transactions/${editTarget.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          date: editTarget.date,
-          amount: editTarget.amount,
-          type: editTarget.type,
-          categoryId: editTarget.categoryId,
-          memo: editTarget.memo,
-        }),
-      });
-      if (!res.ok) throw new Error("更新失敗");
-
+      await putWithAuth(`/transactions/${id}`, putTransaction);
       updateTransaction(editTarget);
     } catch (err) {
       console.error(err);
-      alert("更新に失敗しました");
+      onLogout();
     } finally {
       setEditTarget(null);
       setIsDialogOpen(false);
