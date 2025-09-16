@@ -22,7 +22,15 @@ export const fetchWithAuth = async (url: string) => {
     });
 
     if (!refreshRes.ok) {
-      throw new Error(`Failed to refresh token`);
+      const errorText = await refreshRes.text(); // レスポンスボディを取得
+      console.error("Refresh token error:", {
+        status: refreshRes.status,
+        statusText: refreshRes.statusText,
+        body: errorText,
+      });
+      throw new Error(
+        `Failed to refresh token: ${refreshRes.status} - ${errorText}`
+      );
     }
 
     const data = await refreshRes.json();
