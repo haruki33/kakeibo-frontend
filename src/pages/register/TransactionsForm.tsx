@@ -1,10 +1,10 @@
 import {
-  Button,
   CloseButton,
   createListCollection,
   Dialog,
   Field,
   Input,
+  NumberInput,
   Portal,
   Select,
   VStack,
@@ -14,10 +14,11 @@ import type {
   Category,
   PostTransaction,
   Transaction,
-} from "./components/types/myregister.ts";
+} from "../../types/myregister.ts";
 import { groupBy } from "es-toolkit";
-import { useAuth } from "./utils/useAuth.tsx";
-import { postWithAuth } from "./utils/postWithAuth.tsx";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { postWithAuth } from "../../utils/postWithAuth.tsx";
+import PositiveButton from "@/components/PositiveButton.tsx";
 
 type TransactionsFormProps = {
   categories: Category[];
@@ -35,7 +36,7 @@ export default function TransactionsForm({
   const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10)
   );
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("0");
   const [type, setType] = useState<string>("expense");
   const [categoryId, setCategoryId] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -69,7 +70,7 @@ export default function TransactionsForm({
 
     const newTransaction: PostTransaction = {
       date,
-      amount,
+      amount: Number(amount),
       type,
       categoryId,
       memo,
@@ -98,11 +99,11 @@ export default function TransactionsForm({
             </Dialog.CloseTrigger>
 
             <Dialog.Header>
-              <Dialog.Title>新しい取引を追加</Dialog.Title>
+              <Dialog.Title>お金の新規登録</Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
-              <VStack>
+              <VStack gap="4">
                 <Field.Root>
                   <Field.Label>日付</Field.Label>
                   <Input
@@ -119,18 +120,21 @@ export default function TransactionsForm({
 
                 <Field.Root>
                   <Field.Label>金額</Field.Label>
-                  <Input
-                    type="number"
-                    value={amount ?? ""}
-                    onChange={(e) => setAmount(Number(e.target.value))}
+                  <NumberInput.Root
+                    value={amount.replace(/^0+(?=\d)/, "")}
+                    onValueChange={(e) => setAmount(e.value)}
+                    minW="100%"
                     required
-                  />
+                  >
+                    <NumberInput.Control />
+                    <NumberInput.Input />
+                  </NumberInput.Root>
                 </Field.Root>
 
                 <Field.Root>
                   <Field.Label>メモ</Field.Label>
                   <Input
-                    type="text"
+                    placeholder="例）ランチ代"
                     value={memo ?? ""}
                     onChange={(e) => setMemo(e.target.value)}
                   />
@@ -138,14 +142,12 @@ export default function TransactionsForm({
               </VStack>
             </Dialog.Body>
             <Dialog.Footer>
-              <Button
+              <PositiveButton
                 loading={loading}
-                colorPalette="teal"
                 onClick={(e) => handleSubmit(e)}
                 loadingText="保存中..."
-              >
-                保存
-              </Button>
+                buttonText="保存"
+              />
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>

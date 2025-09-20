@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import CategoriesForm from "./CategoriesForm";
-import CategoriesList from "./CategoriesList";
+import CategoriesForm from "./CategoriesForm.tsx";
+import CategoriesList from "./CategoriesList.tsx";
 import { Stack } from "@chakra-ui/react";
 
-import type { Category } from "./components/types/mysetting.ts";
-import { useAuth } from "./utils/useAuth.tsx";
-import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
+import type { Category } from "../../types/mysetting.ts";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 
 function MySetting() {
   const [categories, setCategories] = useState<Category[]>([]);

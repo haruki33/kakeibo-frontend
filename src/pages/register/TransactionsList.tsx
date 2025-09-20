@@ -1,12 +1,12 @@
 import { useState } from "react";
 import {
-  Button,
   CloseButton,
   createListCollection,
   Dialog,
   Field,
   IconButton,
   Input,
+  NumberInput,
   Portal,
   Select,
   Table,
@@ -14,11 +14,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import type { Category, Transaction } from "./components/types/myregister.ts";
+import type { Category, Transaction } from "../../types/myregister.ts";
 import { groupBy } from "es-toolkit";
-import { useAuth } from "./utils/useAuth.tsx";
-import { deleteWithAuth } from "./utils/deleteWithAuth.tsx";
-import { putWithAuth } from "./utils/putWithAuth.tsx";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { deleteWithAuth } from "../../utils/deleteWithAuth.tsx";
+import { putWithAuth } from "../../utils/putWithAuth.tsx";
+import PositiveButton from "@/components/PositiveButton.tsx";
 
 type TransactionsListProps = {
   categories: Category[];
@@ -197,20 +198,28 @@ export default function TransactionsList({
 
                   <Field.Root>
                     <Field.Label>金額</Field.Label>
-                    <Input
-                      type="number"
-                      value={editTarget ? editTarget.amount : ""}
-                      onChange={(e) =>
+                    <NumberInput.Root
+                      value={
+                        editTarget
+                          ? String(editTarget.amount).replace(/^0+(?=\d)/, "")
+                          : ""
+                      }
+                      onValueChange={(e) =>
                         setEditTarget((prev) =>
                           prev
                             ? {
                                 ...prev,
-                                amount: Number(e.target.value),
+                                amount: Number(e.value),
                               }
                             : null
                         )
                       }
-                    />
+                      minW="100%"
+                      required
+                    >
+                      <NumberInput.Control />
+                      <NumberInput.Input />
+                    </NumberInput.Root>
                   </Field.Root>
 
                   <Field.Root>
@@ -228,14 +237,12 @@ export default function TransactionsList({
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button
+                <PositiveButton
                   loading={loading}
-                  colorPalette="green"
                   onClick={(e) => handleSubmit(e)}
-                  loadingText="保存中..."
-                >
-                  保存
-                </Button>
+                  loadingText="登録中..."
+                  buttonText="登録"
+                />
               </Dialog.Footer>
             </Dialog.Content>
           </Dialog.Positioner>

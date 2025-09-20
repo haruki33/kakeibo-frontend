@@ -14,9 +14,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import type { Category, Transaction } from "./components/types/myregister.ts";
-import { useAuth } from "./utils/useAuth.tsx";
-import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
+import type { Category, Transaction } from "../../types/myregister.ts";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 
 function MyRegister() {
   const [selectedYearAndMonth, setSelectedYearAndMonth] = useState(
@@ -137,8 +137,8 @@ function MyRegister() {
               placement="center"
             >
               <Dialog.Trigger asChild>
-                <Button m="4" colorPalette="green" variant="subtle">
-                  新しい取引を追加
+                <Button m="4" colorPalette="green" variant="solid">
+                  新しい記録を追加
                 </Button>
               </Dialog.Trigger>
               <TransactionsForm

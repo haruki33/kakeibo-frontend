@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Button,
   Card,
   createListCollection,
   Field,
@@ -9,9 +8,10 @@ import {
   Select,
   Stack,
 } from "@chakra-ui/react";
-import type { Category, AddCategory } from "./components/types/mysetting.ts";
-import { useAuth } from "./utils/useAuth.tsx";
-import { postWithAuth } from "./utils/postWithAuth.tsx";
+import type { Category, AddCategory } from "../../types/mysetting.ts";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { postWithAuth } from "../../utils/postWithAuth.tsx";
+import PositiveButton from "@/components/PositiveButton.tsx";
 
 type CategoriesFormProps = {
   categories: Category[];
@@ -60,39 +60,14 @@ export default function CategoriesForm({
     };
 
     postCategory();
-    // try {
-    //   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    //   const res = await fetch(`${baseUrl}/categories`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    //     },
-    //     body: JSON.stringify(newCategory),
-    //   });
-    //   if (!res.ok) {
-    //     throw new Error("Failed to create category");
-    //   }
-
-    //   const createdCategory = await res.json();
-    //   addCategories(createdCategory);
-    // } catch (error) {
-    //   console.error("Error creating category:", error);
-    // } finally {
-    //   setName("給料");
-    //   setType("income");
-    //   setDescription("");
-    //   setLoading(false);
-    // }
   };
 
   return (
     <>
       <Card.Root
         variant="outline"
-        h={{ base: "40vh", md: "50vh" }}
+        h={{ base: "42vh", md: "50vh" }}
         w={{ base: "full", md: "60vw" }}
-        // minH="500px"
         size="sm"
       >
         <Card.Header pb="4">
@@ -153,16 +128,12 @@ export default function CategoriesForm({
           </Stack>
         </Card.Body>
         <Card.Footer>
-          <Button
+          <PositiveButton
             loading={loading}
-            colorPalette="green"
-            type="submit"
             onClick={(e) => handleSubmit(e)}
             loadingText="登録中..."
-            w="full"
-          >
-            登録
-          </Button>
+            buttonText="登録"
+          />
         </Card.Footer>
       </Card.Root>
     </>

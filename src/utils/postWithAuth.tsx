@@ -1,5 +1,5 @@
-import type { AddCategory } from "../components/types/mysetting.ts";
-import type { PostTransaction } from "../components/types/myregister.ts";
+import type { AddCategory } from "../types/mysetting.ts";
+import type { PostTransaction } from "../types/myregister.ts";
 
 export const postWithAuth = async (
   url: string,

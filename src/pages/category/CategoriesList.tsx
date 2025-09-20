@@ -20,6 +20,7 @@ import {
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import type { Category } from "./components/types/mysetting.ts";
 import { MdRestoreFromTrash } from "react-icons/md";
+import PositiveButton from "@/components/PositiveButton.tsx";
 
 type categoriesListProps = {
   isLoadingCategories: boolean;
@@ -272,14 +273,12 @@ export default function CategoriesList({
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button
+                <PositiveButton
                   loading={loading}
-                  colorPalette="green"
                   onClick={(e) => handleSubmit(e)}
-                  loadingText="保存中..."
-                >
-                  保存
-                </Button>
+                  loadingText="登録中..."
+                  buttonText="登録"
+                />
               </Dialog.Footer>
             </Dialog.Content>
           </Dialog.Positioner>

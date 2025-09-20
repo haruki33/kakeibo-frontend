@@ -1,4 +1,4 @@
-import type { PutTransaction } from "../components/types/myregister.ts";
+import type { PutTransaction } from "../types/myregister.ts";
 
 export const putWithAuth = async (url: string, putData: PutTransaction) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
