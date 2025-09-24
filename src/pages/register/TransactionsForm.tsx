@@ -11,41 +11,34 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import type {
-  Category,
-  PostTransaction,
-  Transaction,
-} from "../../types/myregister.ts";
+import type { Category, Transaction } from "../../types/myregister.ts";
 import { groupBy } from "es-toolkit";
 import { useAuth } from "../../utils/useAuth.tsx";
-import { postWithAuth } from "../../utils/postWithAuth.tsx";
 import { Controller, useForm } from "react-hook-form";
 
 type TransactionsFormProps = {
   categories: Category[];
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
-  selectedDate: string;
-  addTransaction: (newTransaction: Transaction) => void;
+  handleTransaction: (data: Transaction) => Promise<void>;
+  defaultValues: Transaction;
+  formTitle: string;
+  submitButtonText: string;
+  loadingText: string;
 };
 
 export default function TransactionsForm({
   categories,
   isDialogOpen,
   setIsDialogOpen,
-  selectedDate,
-  addTransaction,
+  handleTransaction,
+  defaultValues,
+  formTitle,
+  submitButtonText,
+  loadingText,
 }: TransactionsFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const { onLogout } = useAuth();
-
-  const defaultValues: PostTransaction = {
-    date: selectedDate,
-    amount: 0,
-    type: "",
-    categoryId: "",
-    memo: "",
-  };
 
   const {
     register,
@@ -53,7 +46,7 @@ export default function TransactionsForm({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<PostTransaction>({
+  } = useForm<Transaction>({
     defaultValues,
   });
 
@@ -70,12 +63,11 @@ export default function TransactionsForm({
     groupBy(categoriesCollection.items, (item) => item.type)
   );
 
-  const onsubmit = async (data: PostTransaction) => {
+  const onsubmit = async (data: Transaction) => {
     setLoading(true);
 
     try {
-      const Res = await postWithAuth("/transactions", data);
-      addTransaction(Res);
+      await handleTransaction(data);
     } catch (error) {
       console.error(error);
       onLogout();
@@ -105,7 +97,7 @@ export default function TransactionsForm({
               </Dialog.CloseTrigger>
 
               <Dialog.Header>
-                <Dialog.Title>お金の新規登録</Dialog.Title>
+                <Dialog.Title>{formTitle}</Dialog.Title>
               </Dialog.Header>
 
               <Dialog.Body>
@@ -172,10 +164,10 @@ export default function TransactionsForm({
                   loading={loading}
                   colorPalette="green"
                   variant="solid"
-                  loadingText="保存中..."
+                  loadingText={loadingText}
                   w="full"
                 >
-                  保存
+                  {submitButtonText}
                 </Button>
               </Dialog.Footer>
             </Dialog.Content>

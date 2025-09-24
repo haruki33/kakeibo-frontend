@@ -1,6 +1,6 @@
-import type { PutTransaction } from "../types/myregister.ts";
+import type { Transaction } from "../types/myregister.ts";
 
-export const putWithAuth = async (url: string, putData: PutTransaction) => {
+export const putWithAuth = async (url: string, putData: Transaction) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   let accessToken = localStorage.getItem("accessToken");
 
@@ -45,4 +45,5 @@ export const putWithAuth = async (url: string, putData: PutTransaction) => {
 
   if (!res.ok)
     throw new Error(`Request failed: ${res.status} - ${res.statusText}`);
+  return res.json();
 };

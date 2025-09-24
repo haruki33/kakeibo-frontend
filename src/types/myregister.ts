@@ -13,19 +13,3 @@ export type Transaction = {
   categoryId: string;
   memo: string;
 };
-
-export type PutTransaction = {
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
-};
-
-export type PostTransaction = {
-  date: string;
-  amount: number;
-  type: string;
-  categoryId: string;
-  memo: string;
-};
