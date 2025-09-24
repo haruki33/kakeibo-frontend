@@ -47,10 +47,15 @@ export default function TransactionsForm({
     memo: "",
   };
 
-  const { register, control, handleSubmit, setValue } =
-    useForm<PostTransaction>({
-      defaultValues,
-    });
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<PostTransaction>({
+    defaultValues,
+  });
 
   const categoriesCollection = createListCollection({
     items: categories.map((category) => ({
@@ -65,7 +70,7 @@ export default function TransactionsForm({
     groupBy(categoriesCollection.items, (item) => item.type)
   );
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onsubmit = async (data: PostTransaction) => {
     setLoading(true);
 
     try {
@@ -78,7 +83,7 @@ export default function TransactionsForm({
       setIsDialogOpen(false);
       setLoading(false);
     }
-  });
+  };
 
   return (
     <Dialog.Root
@@ -89,7 +94,11 @@ export default function TransactionsForm({
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <form onSubmit={onSubmit} style={{ width: "80%" }}>
+          <form
+            onSubmit={handleSubmit(onsubmit)}
+            noValidate
+            style={{ width: "80%" }}
+          >
             <Dialog.Content>
               <Dialog.CloseTrigger asChild>
                 <CloseButton />
@@ -101,11 +110,12 @@ export default function TransactionsForm({
 
               <Dialog.Body>
                 <VStack gap="4">
-                  <Field.Root>
+                  <Field.Root invalid={!!errors.date}>
                     <Field.Label>日付</Field.Label>
                     <Controller
                       name="date"
                       control={control}
+                      rules={{ required: "日付は必須です" }}
                       render={({ field }) => (
                         <Input
                           name={field.name}
@@ -117,17 +127,22 @@ export default function TransactionsForm({
                         />
                       )}
                     />
+                    <Field.ErrorText>{errors.date?.message}</Field.ErrorText>
                   </Field.Root>
 
-                  <Field.Root>
+                  <Field.Root invalid={!!errors.categoryId}>
                     <DialogCategoriesSelect />
+                    <Field.ErrorText>
+                      {errors.categoryId?.message}
+                    </Field.ErrorText>
                   </Field.Root>
 
-                  <Field.Root>
+                  <Field.Root invalid={!!errors.amount}>
                     <Field.Label>金額</Field.Label>
                     <Controller
                       name="amount"
                       control={control}
+                      rules={{ required: "金額は必須です" }}
                       render={({ field }) => (
                         <NumberInput.Root
                           name={field.name}
@@ -142,6 +157,7 @@ export default function TransactionsForm({
                         </NumberInput.Root>
                       )}
                     />
+                    <Field.ErrorText>{errors.amount?.message}</Field.ErrorText>
                   </Field.Root>
 
                   <Field.Root>
@@ -174,6 +190,7 @@ export default function TransactionsForm({
       <Controller
         name="categoryId"
         control={control}
+        rules={{ required: "カテゴリーは必須です" }}
         render={({ field }) => (
           <Select.Root
             name={field.name}
