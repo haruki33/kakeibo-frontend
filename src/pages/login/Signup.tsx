@@ -1,11 +1,13 @@
-import { Button, Card, Field, Input, Stack } from "@chakra-ui/react";
+import { Card, Field, Input, Stack } from "@chakra-ui/react";
 import { useState } from "react";
-import type { Signup } from "./components/types/login.ts";
+import type { Signup } from "../../types/login.ts";
+import PositiveButton from "@/components/PositiveButton.tsx";
 
 export default function Signup() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleClick = async () => {
     const signup: Signup = {
@@ -13,6 +15,7 @@ export default function Signup() {
       email,
       password,
     };
+    setLoading(true);
 
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -39,15 +42,13 @@ export default function Signup() {
       setName("");
       setEmail("");
       setPassword("");
+      setLoading(false);
     }
   };
 
   return (
     <>
       <Card.Root h="100%" w="100%" variant="subtle" bg="white">
-        {/* <Card.Header>
-          <Card.Title>新規登録</Card.Title>
-        </Card.Header> */}
         <Card.Body>
           <Stack gap="4" w="full">
             <Field.Root required>
@@ -94,9 +95,12 @@ export default function Signup() {
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Button variant="solid" onClick={handleClick}>
-            新規登録
-          </Button>
+          <PositiveButton
+            loading={loading}
+            onClick={handleClick}
+            loadingText="保存中..."
+            buttonText="保存"
+          />
         </Card.Footer>
       </Card.Root>
     </>

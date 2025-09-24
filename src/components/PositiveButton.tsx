@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/react";
 
 type ButtonProps = {
   loading?: boolean;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick?: () => void;
   loadingText?: string;
   buttonText?: string;
 };

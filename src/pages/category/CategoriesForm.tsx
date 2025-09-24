@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   createListCollection,
@@ -28,8 +28,7 @@ export default function CategoriesForm({
   const [loading, setLoading] = useState<boolean>(false);
   const { onLogout } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
 
     if (categories.some((cat) => cat.name === name)) {
@@ -130,7 +129,7 @@ export default function CategoriesForm({
         <Card.Footer>
           <PositiveButton
             loading={loading}
-            onClick={(e) => handleSubmit(e)}
+            onClick={handleSubmit}
             loadingText="登録中..."
             buttonText="登録"
           />

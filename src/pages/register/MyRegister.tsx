@@ -131,10 +131,29 @@ function MyRegister() {
                 </Box>
               )}
             </Card.Body>
-            <Dialog.Root
+            <Button
+              m="4"
+              colorPalette="green"
+              variant="solid"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              新しい記録を追加
+            </Button>
+
+            {isDialogOpen && (
+              <TransactionsForm
+                categories={categories}
+                isDialogOpen={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
+                selectedDate={selectedDate}
+                addTransaction={addTransaction}
+              />
+            )}
+            {/* <Dialog.Root
               open={isDialogOpen}
               onOpenChange={(details) => setIsDialogOpen(details.open)}
               placement="center"
+              size={{ mdDown: "full", md: "lg" }}
             >
               <Dialog.Trigger asChild>
                 <Button m="4" colorPalette="green" variant="solid">
@@ -147,7 +166,7 @@ function MyRegister() {
                 addTransaction={addTransaction}
                 setIsDialogOpen={setIsDialogOpen}
               />
-            </Dialog.Root>
+            </Dialog.Root> */}
           </Card.Root>
         </VStack>
       </Stack>

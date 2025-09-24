@@ -75,8 +75,7 @@ export default function TransactionsList({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
 
     if (!editTarget) {
@@ -239,7 +238,7 @@ export default function TransactionsList({
               <Dialog.Footer>
                 <PositiveButton
                   loading={loading}
-                  onClick={(e) => handleSubmit(e)}
+                  onClick={handleSubmit}
                   loadingText="登録中..."
                   buttonText="登録"
                 />
