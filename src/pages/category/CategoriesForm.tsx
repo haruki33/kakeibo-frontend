@@ -34,18 +34,17 @@ export default function CategoriesForm({
   const [loading, setLoading] = useState<boolean>(false);
   const { onLogout } = useAuth();
 
-  const { register, control, handleSubmit } = useForm<Category>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Category>({
     defaultValues,
   });
 
   const onsubmit = async (data: Category) => {
     setLoading(true);
-
-    if (categories.some((cat) => cat.name === data.name)) {
-      alert("同じ名前のカテゴリが存在します");
-      setLoading(false);
-      return;
-    }
 
     try {
       await handleCategory(data);
@@ -96,11 +95,23 @@ export default function CategoriesForm({
   };
 
   const formContent = (
-    <form onSubmit={handleSubmit(onsubmit)}>
+    <form onSubmit={handleSubmit(onsubmit)} noValidate>
       <Stack gap="4" w="full">
-        <Field.Root>
+        <Field.Root invalid={!!errors.name}>
           <Field.Label>カテゴリー名</Field.Label>
-          <Input variant="outline" {...register("name")} />
+          <Input
+            variant="outline"
+            {...register("name", {
+              required: "カテゴリー名は必須です",
+              validate: (value) => {
+                const isExist = categories.some(
+                  (cat) => cat.name === value && cat.id !== defaultValues.id
+                );
+                return isExist ? "同じ名前のカテゴリが存在します" : true;
+              },
+            })}
+          />
+          <Field.ErrorText>{errors.name?.message}</Field.ErrorText>
         </Field.Root>
 
         <Field.Root>
@@ -130,7 +141,7 @@ export default function CategoriesForm({
     return (
       <Card.Root
         variant="outline"
-        h={{ base: "42vh", md: "50vh" }}
+        h={{ base: "42vh", md: "55vh" }}
         w={{ base: "full", md: "60vw" }}
         size="sm"
       >
