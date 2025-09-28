@@ -1,6 +1,10 @@
+import type { Category } from "@/types/mysetting.ts";
 import type { Transaction } from "../types/myregister.ts";
 
-export const putWithAuth = async (url: string, putData: Transaction) => {
+export const putWithAuth = async (
+  url: string,
+  putData: Transaction | Category
+) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   let accessToken = localStorage.getItem("accessToken");
 

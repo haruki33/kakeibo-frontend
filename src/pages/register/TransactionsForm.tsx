@@ -68,8 +68,8 @@ export default function TransactionsForm({
 
     try {
       await handleTransaction(data);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       onLogout();
     } finally {
       setIsDialogOpen(false);

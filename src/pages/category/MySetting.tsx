@@ -6,12 +6,21 @@ import { Stack } from "@chakra-ui/react";
 import type { Category } from "../../types/mysetting.ts";
 import { useAuth } from "../../utils/useAuth.tsx";
 import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
+import { postWithAuth } from "@/utils/postWithAuth.tsx";
 
 function MySetting() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] =
     useState<boolean>(false);
   const { onLogout } = useAuth();
+
+  const defaultValues = {
+    id: "",
+    name: "給料",
+    type: "income",
+    is_deleted: false,
+    description: "",
+  };
 
   const addCategories = (newCategories: Category) => {
     setCategories((prev: Category[]) => [...prev, newCategories]);
@@ -55,7 +64,18 @@ function MySetting() {
         maxW="800px"
         mx="auto"
       >
-        <CategoriesForm categories={categories} addCategories={addCategories} />
+        <CategoriesForm
+          categories={categories}
+          defaultValues={defaultValues}
+          handleCategory={async (data: Category) => {
+            const res = await postWithAuth("/categories", data);
+            addCategories(res);
+          }}
+          formTitle="カテゴリ追加"
+          submitButtonText="追加"
+          loadingText="追加中..."
+          useCard={true}
+        />
         <CategoriesList
           isLoadingCategories={isLoadingCategories}
           categories={categories}
