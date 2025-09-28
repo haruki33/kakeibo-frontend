@@ -1,7 +1,6 @@
-import { Card, Field, Input, Stack } from "@chakra-ui/react";
+import { Button, Card, Field, Input, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 import type { Signup } from "../../types/login.ts";
-import PositiveButton from "@/components/PositiveButton.tsx";
 
 export default function Signup() {
   const [name, setName] = useState<string>("");
@@ -95,12 +94,18 @@ export default function Signup() {
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <PositiveButton
+          <Button
+            type="submit"
             loading={loading}
+            colorPalette="green"
+            variant="solid"
+            loadingText="登録中..."
+            w="full"
+            mt={4}
             onClick={handleClick}
-            loadingText="保存中..."
-            buttonText="保存"
-          />
+          >
+            登録
+          </Button>
         </Card.Footer>
       </Card.Root>
     </>
