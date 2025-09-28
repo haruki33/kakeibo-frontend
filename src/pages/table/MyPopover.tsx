@@ -7,10 +7,10 @@ import {
   Flex,
   Spinner,
 } from "@chakra-ui/react";
-import type { Category, Transaction } from "./components/types/myregister.ts";
+import type { Category, Transaction } from "../../types/myregister.ts";
 import { useEffect, useState } from "react";
-import { useAuth } from "./utils/useAuth.tsx";
-import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 
 type MyPopoverProps = {
   isPopoverOpen: boolean;

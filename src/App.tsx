@@ -1,17 +1,15 @@
 import { Routes, Route } from "react-router";
 
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./utils/AuthContext";
 import { useAuth } from "./utils/useAuth";
 
-import LoginLayout from "./LoginLayout";
-import Signin from "./Signin";
-import Signup from "./Signup";
+import LoginLayout from "./pages/login/LoginLayout";
+import Signin from "./pages/login/Signin";
 
-import MainLayout from "./MainLayout";
-import MyRegister from "./MyRegister";
-import MyTable from "./MyTable";
-import MySetting from "./MySetting";
-import NoMatch from "./NoMatch";
+import MainLayout from "./pages/mainlayout/MainLayout";
+import MyRegister from "./pages/register/MyRegister";
+import MyTable from "./pages/table/MyTable";
+import NoMatch from "./pages/mainlayout/NoMatch";
 
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
@@ -19,7 +17,9 @@ import type {
   SigninType,
   AuthProviderType,
   ProtectedRouteType,
-} from "./components/types/login";
+} from "./types/login";
+import Signup from "./pages/login/Signup";
+import MySetting from "./pages/category/MySetting";
 
 const AuthProvider = ({ children }: AuthProviderType) => {
   const [email, setEmail] = useState<string>("");

@@ -2,15 +2,10 @@ import { useState } from "react";
 import {
   Button,
   CloseButton,
-  createListCollection,
   Dialog,
-  Field,
   IconButton,
-  Input,
   Portal,
-  Select,
   Table,
-  VStack,
   Text,
   Card,
   Box,
@@ -18,8 +13,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import type { Category } from "./components/types/mysetting.ts";
+import type { Category } from "../../types/mysetting.ts";
 import { MdRestoreFromTrash } from "react-icons/md";
+import CategoriesForm from "./CategoriesForm.tsx";
+import { putWithAuth } from "@/utils/putWithAuth.tsx";
 
 type categoriesListProps = {
   isLoadingCategories: boolean;
@@ -34,11 +31,10 @@ export default function CategoriesList({
   updateCategories,
   deleteCategories,
 }: categoriesListProps) {
-  const [editTarget, setEditTarget] = useState<Category | null>(null);
+  const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeletedCategoriesDialogOpen, setIsDeletedCategoriesDialogOpen] =
     useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const deleteCategory = async (category: Category) => {
     if (!confirm("本当に削除しますか？")) return;
@@ -59,42 +55,6 @@ export default function CategoriesList({
       updateCategories(deletedCategory);
     } catch (error) {
       console.error("Error deleting category:", error);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!editTarget) {
-      alert("編集対象のカテゴリが選択されていません");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/categories/${editTarget.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          name: editTarget.name,
-          type: editTarget.type,
-          description: editTarget.description,
-        }),
-      });
-      if (!res.ok) throw new Error("更新失敗");
-
-      updateCategories(editTarget);
-    } catch (err) {
-      console.error(err);
-      alert("カテゴリ更新に失敗しました");
-    } finally {
-      setIsEditDialogOpen(false);
-      setLoading(false);
     }
   };
 
@@ -119,12 +79,12 @@ export default function CategoriesList({
   };
 
   const handleEditClick = (cat: Category) => {
-    setEditTarget(cat);
+    setEditCategory(cat);
     setIsEditDialogOpen(true);
   };
 
   const handleEditDialogClose = () => {
-    setEditTarget(null);
+    setEditCategory(null);
     setIsEditDialogOpen(false);
   };
 
@@ -219,72 +179,45 @@ export default function CategoriesList({
         </Card.Body>
       </Card.Root>
 
-      <Dialog.Root
-        open={isEditDialogOpen}
-        onOpenChange={(details) => {
-          if (!details.open) {
-            handleEditDialogClose();
-          }
-        }}
-        placement="center"
-      >
-        <Portal>
-          <Dialog.Backdrop />
-          <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.CloseTrigger asChild>
-                <CloseButton />
-              </Dialog.CloseTrigger>
-              <Dialog.Header>
-                <Dialog.Title>カテゴリー編集</Dialog.Title>
-              </Dialog.Header>
-              <Dialog.Body>
-                <VStack>
-                  <Field.Root>
-                    <Field.Label>カテゴリー名</Field.Label>
-                    <Input
-                      value={editTarget ? editTarget.name : ""}
-                      onChange={(e) =>
-                        setEditTarget((prev) =>
-                          prev ? { ...prev, name: e.target.value } : null
-                        )
-                      }
-                      placeholder="カテゴリー名を入力"
-                    />
-                  </Field.Root>
-
-                  <Field.Root>
-                    <DialogSelect />
-                  </Field.Root>
-
-                  <Field.Root>
-                    <Field.Label>説明</Field.Label>
-                    <Input
-                      value={editTarget ? editTarget.description : ""}
-                      onChange={(e) =>
-                        setEditTarget((prev) =>
-                          prev ? { ...prev, description: e.target.value } : null
-                        )
-                      }
-                      placeholder="説明を入力"
-                    />
-                  </Field.Root>
-                </VStack>
-              </Dialog.Body>
-              <Dialog.Footer>
-                <Button
-                  loading={loading}
-                  colorPalette="green"
-                  onClick={(e) => handleSubmit(e)}
-                  loadingText="保存中..."
-                >
-                  保存
-                </Button>
-              </Dialog.Footer>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
+      {isEditDialogOpen && editCategory && (
+        <Dialog.Root
+          open={isEditDialogOpen}
+          onOpenChange={handleEditDialogClose}
+          placement="center"
+        >
+          <Portal>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content>
+                <Dialog.CloseTrigger asChild>
+                  <CloseButton />
+                </Dialog.CloseTrigger>
+                <Dialog.Header>
+                  <Dialog.Title>カテゴリー編集</Dialog.Title>
+                </Dialog.Header>
+                <Dialog.Body>
+                  <CategoriesForm
+                    categories={categories}
+                    defaultValues={editCategory}
+                    handleCategory={async (data: Category) => {
+                      const res = await putWithAuth(
+                        `/categories/${data?.id}`,
+                        data
+                      );
+                      updateCategories(res);
+                      handleEditDialogClose();
+                    }}
+                    formTitle="カテゴリ編集"
+                    submitButtonText="更新"
+                    loadingText="更新中..."
+                    useCard={false}
+                  />
+                </Dialog.Body>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Portal>
+        </Dialog.Root>
+      )}
 
       <Dialog.Root
         open={isDeletedCategoriesDialogOpen}
@@ -359,44 +292,4 @@ export default function CategoriesList({
       </Dialog.Root>
     </>
   );
-
-  function DialogSelect() {
-    return (
-      <Select.Root
-        collection={types}
-        size="sm"
-        onValueChange={(e) =>
-          setEditTarget((prev) => (prev ? { ...prev, type: e.value[0] } : null))
-        }
-        value={editTarget ? [editTarget.type] : []}
-      >
-        <Select.HiddenSelect />
-        <Select.Label>収支選択</Select.Label>
-        <Select.Control>
-          <Select.Trigger>
-            <Select.ValueText placeholder="選択" />
-          </Select.Trigger>
-          <Select.IndicatorGroup>
-            <Select.Indicator />
-          </Select.IndicatorGroup>
-        </Select.Control>
-        <Select.Positioner>
-          <Select.Content>
-            {types.items.map((item) => (
-              <Select.Item item={item} key={item.value}>
-                {item.label}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Select.Root>
-    );
-  }
 }
-
-const types = createListCollection({
-  items: [
-    { value: "income", label: "収入" },
-    { value: "expense", label: "支出" },
-  ],
-});

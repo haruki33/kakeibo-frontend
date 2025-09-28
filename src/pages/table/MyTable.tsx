@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import type { Category } from "./components/types/mytable.ts";
+import type { Category } from "../../types/mytable.ts";
 import { Table, Card, Flex, Switch } from "@chakra-ui/react";
 import MyPopover from "./MyPopover.tsx";
-import { useAuth } from "./utils/useAuth.tsx";
-import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 
 type AmountPerCategoryPerMonth = {
   month: string;

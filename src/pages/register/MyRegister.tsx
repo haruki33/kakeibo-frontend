@@ -7,16 +7,16 @@ import {
   Box,
   Button,
   Card,
-  Dialog,
   Flex,
   Spinner,
   Stack,
   VStack,
 } from "@chakra-ui/react";
 
-import type { Category, Transaction } from "./components/types/myregister.ts";
-import { useAuth } from "./utils/useAuth.tsx";
-import { fetchWithAuth } from "./utils/fetchWithAuth.tsx";
+import type { Category, Transaction } from "../../types/myregister.ts";
+import { useAuth } from "../../utils/useAuth.tsx";
+import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
+import { postWithAuth } from "@/utils/postWithAuth.tsx";
 
 function MyRegister() {
   const [selectedYearAndMonth, setSelectedYearAndMonth] = useState(
@@ -32,8 +32,18 @@ function MyRegister() {
     useState<boolean>(false);
   const { onLogout } = useAuth();
 
+  const defaultValues: Transaction = {
+    id: "",
+    date: selectedDate,
+    amount: 0,
+    type: "",
+    categoryId: "",
+    memo: "",
+  };
+
   const addTransaction = (newTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) => [...prev, newTransaction]);
+    console.log("追加された");
   };
 
   const deleteTransaction = (transactionId: string) => {
@@ -48,6 +58,7 @@ function MyRegister() {
         tx.id === updatedTransaction.id ? updatedTransaction : tx
       )
     );
+    console.log("更新された");
   };
 
   useEffect(() => {
@@ -131,23 +142,30 @@ function MyRegister() {
                 </Box>
               )}
             </Card.Body>
-            <Dialog.Root
-              open={isDialogOpen}
-              onOpenChange={(details) => setIsDialogOpen(details.open)}
-              placement="center"
+            <Button
+              m="4"
+              colorPalette="green"
+              variant="solid"
+              onClick={() => setIsDialogOpen(true)}
             >
-              <Dialog.Trigger asChild>
-                <Button m="4" colorPalette="green" variant="subtle">
-                  新しい取引を追加
-                </Button>
-              </Dialog.Trigger>
+              新しい記録を追加
+            </Button>
+
+            {isDialogOpen && (
               <TransactionsForm
                 categories={categories}
-                selectedDate={selectedDate}
-                addTransaction={addTransaction}
+                isDialogOpen={isDialogOpen}
                 setIsDialogOpen={setIsDialogOpen}
+                handleTransaction={async (data) => {
+                  const res = await postWithAuth("/transactions", data);
+                  addTransaction(res);
+                }}
+                defaultValues={defaultValues}
+                formTitle="お金の新規登録"
+                submitButtonText="保存"
+                loadingText="保存中..."
               />
-            </Dialog.Root>
+            )}
           </Card.Root>
         </VStack>
       </Stack>
