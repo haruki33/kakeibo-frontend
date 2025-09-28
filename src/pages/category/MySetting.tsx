@@ -23,7 +23,10 @@ function MySetting() {
   };
 
   const addCategories = (newCategories: Category) => {
-    setCategories((prev: Category[]) => [...prev, newCategories]);
+    setCategories((prev: Category[]) => {
+      const updatedCategories = [...prev, newCategories];
+      return sortCategories(updatedCategories);
+    });
   };
 
   const deleteCategories = (categoryId: string) => {
@@ -33,9 +36,21 @@ function MySetting() {
   };
 
   const updatedCategory = (updatedCategory: Category) => {
-    setCategories((prev: Category[]) =>
-      prev.map((cat) => (cat.id === updatedCategory.id ? updatedCategory : cat))
-    );
+    setCategories((prev: Category[]) => {
+      const updated = prev.map((cat) =>
+        cat.id === updatedCategory.id ? updatedCategory : cat
+      );
+      return sortCategories(updated);
+    });
+  };
+
+  const sortCategories = (categories: Category[]) => {
+    return categories.sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type === "income" ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name, "ja");
+    });
   };
 
   useEffect(() => {
@@ -43,7 +58,7 @@ function MySetting() {
       setIsLoadingCategories(true);
       try {
         const data = await fetchWithAuth("/categories");
-        setCategories(data);
+        setCategories(sortCategories(data));
       } catch (err) {
         console.error(err);
         onLogout();

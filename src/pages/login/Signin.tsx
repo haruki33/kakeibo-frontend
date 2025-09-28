@@ -1,7 +1,6 @@
-import { Card, Field, Input, Stack } from "@chakra-ui/react";
+import { Button, Card, Field, Input, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAuth } from "../../utils/useAuth";
-import PositiveButton from "@/components/PositiveButton";
 
 export default function Signin() {
   const { email, password, setEmail, setPassword, onLogin } = useAuth();
@@ -46,12 +45,24 @@ export default function Signin() {
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <PositiveButton
+          <Button
+            type="submit"
+            loading={loading}
+            colorPalette="green"
+            variant="solid"
+            loadingText="ログイン中..."
+            w="full"
+            mt={4}
+            onClick={handleLogin}
+          >
+            ログイン
+          </Button>
+          {/* <PositiveButton
             loading={loading}
             onClick={handleLogin}
             loadingText="ログイン中..."
             buttonText="ログイン"
-          />
+          /> */}
         </Card.Footer>
       </Card.Root>
     </>
