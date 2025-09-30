@@ -101,6 +101,7 @@ export default function MyTable() {
     loadCategories();
   }, [onLogout]);
 
+  /// 変更されたときに再レンダリングする必要がある
   useEffect(() => {
     const loadTransactionsSummary = async () => {
       try {
