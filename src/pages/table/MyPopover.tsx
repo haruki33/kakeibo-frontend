@@ -23,6 +23,9 @@ type MyPopoverProps = {
   categories: Category[];
   clickedCategoryId: string;
   clickedMonthIdx: number;
+  setIsUpdatingTransactionInTable: (
+    isUpdatingTransactionInTable: boolean
+  ) => void;
 };
 
 export default function MyPopover({
@@ -31,6 +34,7 @@ export default function MyPopover({
   categories,
   clickedCategoryId,
   clickedMonthIdx,
+  setIsUpdatingTransactionInTable,
 }: MyPopoverProps) {
   const [popoverTransaction, setPopoverTransaction] = useState<Transaction[]>(
     []
@@ -84,7 +88,7 @@ export default function MyPopover({
     if (!confirm("本当に削除しますか？")) return;
     try {
       await deleteWithAuth(`/transactions/${id}`);
-      // deleteTransaction(id);
+      setIsUpdatingTransactionInTable(true);
     } catch (err) {
       console.error(err);
       onLogout();
@@ -189,13 +193,8 @@ export default function MyPopover({
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           handleTransaction={async (data) => {
-            const res = await putWithAuth(
-              `/transactions/${editTarget.id}`,
-              data
-            );
-            console.log(res);
-
-            // updateTransaction(res);
+            await putWithAuth(`/transactions/${editTarget.id}`, data);
+            setIsUpdatingTransactionInTable(true);
           }}
           defaultValues={editTarget}
           formTitle="お金の記録を編集"

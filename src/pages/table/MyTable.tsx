@@ -87,6 +87,9 @@ export default function MyTable() {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const { onLogout } = useAuth();
 
+  const [isUpdatingTransactionInTable, setIsUpdatingTransactionInTable] =
+    useState<boolean>(false);
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -112,11 +115,19 @@ export default function MyTable() {
       } catch (err) {
         console.error(err);
         onLogout();
+      } finally {
+        setIsUpdatingTransactionInTable(false);
+        setIsPopoverOpen(false);
       }
     };
 
-    loadTransactionsSummary();
-  }, [onLogout]);
+    if (
+      isUpdatingTransactionInTable ||
+      amountPerCategoryPerMonth.length === 0
+    ) {
+      loadTransactionsSummary();
+    }
+  }, [onLogout, isUpdatingTransactionInTable, amountPerCategoryPerMonth]);
 
   useEffect(() => {
     const filteredCategories = checked
@@ -381,6 +392,7 @@ export default function MyTable() {
           categories={categories}
           clickedCategoryId={clickedCategoryId}
           clickedMonthIdx={clickedMonthIdx}
+          setIsUpdatingTransactionInTable={setIsUpdatingTransactionInTable}
         />
       )}
     </>
