@@ -17,6 +17,7 @@ import type { Category } from "../../types/mysetting.ts";
 import { MdRestoreFromTrash } from "react-icons/md";
 import CategoriesForm from "./CategoriesForm.tsx";
 import { putWithAuth } from "@/utils/putWithAuth.tsx";
+import { fetchWithAuth } from "@/utils/fetchWithAuth.tsx";
 
 type categoriesListProps = {
   isLoadingCategories: boolean;
@@ -37,21 +38,31 @@ export default function CategoriesList({
     useState<boolean>(false);
 
   const deleteCategory = async (category: Category) => {
-    if (!confirm("本当に削除しますか？")) return;
+    let numTransactionsSpecifiedCategory = 0;
+    try {
+      const data = await fetchWithAuth(
+        `/transactions?categoryId=${category.id}`
+      );
+      console.log(data);
+
+      numTransactionsSpecifiedCategory = data.length;
+    } catch (error) {
+      console.error("Error fetching category details:", error);
+      return;
+    }
+
+    if (
+      !confirm(
+        `"${category.name}" には ${numTransactionsSpecifiedCategory} 件の登録があります．\n本当に削除しますか？`
+      )
+    )
+      return;
 
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const res = await fetch(`${baseUrl}/categories/${category.id}/delete`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to delete category");
-
-      const deletedCategory = await res.json();
+      const deletedCategory = await putWithAuth(
+        `/categories/${category.id}/delete`,
+        category
+      );
       updateCategories(deletedCategory);
     } catch (error) {
       console.error("Error deleting category:", error);
