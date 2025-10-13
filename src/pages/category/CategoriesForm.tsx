@@ -103,11 +103,18 @@ export default function CategoriesForm({
             variant="outline"
             {...register("name", {
               required: "カテゴリー名は必須です",
-              validate: (value) => {
-                const isExist = categories.some(
-                  (cat) => cat.name === value && cat.id !== defaultValues.id
+              validate: (value, formValues) => {
+                const filteredCategoriesWithType = categories.filter((cat) => {
+                  return cat.type === formValues.type;
+                });
+                const isExist = filteredCategoriesWithType.some(
+                  (cat) => cat.name === value
                 );
-                return isExist ? "同じ名前のカテゴリが存在します" : true;
+                return isExist
+                  ? `${
+                      formValues.type === "income" ? "収入" : "支出"
+                    }内に${value}は既に存在します`
+                  : true;
               },
             })}
           />
