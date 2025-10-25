@@ -95,7 +95,6 @@ export default function MyTable() {
       try {
         const data = await fetchWithAuth("/categories");
         setCategories(data);
-        // console.log(data);
       } catch (err) {
         console.error(err);
         onLogout();
@@ -113,7 +112,6 @@ export default function MyTable() {
           `/transactions/summary?year=${new Date().getFullYear()}`
         );
         setAmountPerCategoryPerMonth(data);
-        console.log(data);
       } catch (err) {
         console.error(err);
         onLogout();
