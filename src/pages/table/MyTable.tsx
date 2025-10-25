@@ -31,7 +31,7 @@ const createRows = ({
     });
     const sum = amounts.reduce((acc, curr) => acc + curr, 0);
     const ave = sum / columns.length;
-    return [category.name, ...amounts, sum, ave];
+    return [category.id, category.name, ...amounts, sum, ave];
   });
 
   return rows;
@@ -95,6 +95,7 @@ export default function MyTable() {
       try {
         const data = await fetchWithAuth("/categories");
         setCategories(data);
+        // console.log(data);
       } catch (err) {
         console.error(err);
         onLogout();
@@ -112,6 +113,7 @@ export default function MyTable() {
           `/transactions/summary?year=${new Date().getFullYear()}`
         );
         setAmountPerCategoryPerMonth(data);
+        console.log(data);
       } catch (err) {
         console.error(err);
         onLogout();
@@ -161,14 +163,14 @@ export default function MyTable() {
   );
 
   const handleClickCell = async (
-    clickedCategory: string | number,
+    clickedCategoryId: string,
     clickedMonthIdx: number
   ) => {
-    const clickedCategoryId = categories.find(
-      (cat) => cat.name === clickedCategory
-    )?.id;
+    // const clickedCategoryId = categories.find(
+    //   (cat) => cat.id === clickedCategoryId
+    // )?.id;
 
-    setClickedCategoryId(clickedCategoryId || "");
+    setClickedCategoryId(clickedCategoryId);
     setClickedMonthIdx(clickedMonthIdx);
     setIsPopoverOpen(true);
   };
@@ -276,14 +278,14 @@ export default function MyTable() {
                 {rowsIncome.map((row, rowIdx) => (
                   <Table.Row key={rowIdx}>
                     <Table.Cell data-sticky="categoriesEnd" left="0">
-                      {row[0]}
+                      {row[1]}
                     </Table.Cell>
-                    {row.slice(1).map((cell, cellIdx) => (
+                    {row.slice(2).map((cell, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
                         textAlign="right"
                         onClick={() => {
-                          handleClickCell(row[0], cellIdx);
+                          handleClickCell(String(row[0]), cellIdx);
                         }}
                       >
                         {typeof cell === "number"
@@ -303,7 +305,7 @@ export default function MyTable() {
                     >
                       {incomeTotalsPerMonth[0]}
                     </Table.Cell>
-                    {incomeTotalsPerMonth.slice(1).map((total, cellIdx) => (
+                    {incomeTotalsPerMonth.slice(2).map((total, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
                         textAlign="right"
@@ -320,14 +322,14 @@ export default function MyTable() {
                 {rowsExpense.map((row, rowIdx) => (
                   <Table.Row key={rowIdx}>
                     <Table.Cell data-sticky="categoriesEnd" left="0">
-                      {row[0]}
+                      {row[1]}
                     </Table.Cell>
-                    {row.slice(1).map((cell, cellIdx) => (
+                    {row.slice(2).map((cell, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
                         textAlign="right"
                         onClick={() => {
-                          handleClickCell(row[0], cellIdx);
+                          handleClickCell(String(row[0]), cellIdx);
                         }}
                       >
                         {typeof cell === "number"
@@ -347,7 +349,7 @@ export default function MyTable() {
                     >
                       {expenseTotalsPerMonth[0]}
                     </Table.Cell>
-                    {expenseTotalsPerMonth.slice(1).map((total, cellIdx) => (
+                    {expenseTotalsPerMonth.slice(2).map((total, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
                         textAlign="right"
@@ -366,7 +368,7 @@ export default function MyTable() {
                     <Table.Cell fontWeight="bold" data-sticky="sumEnd" left="0">
                       {BOP[0]}
                     </Table.Cell>
-                    {BOP.slice(1).map((total, cellIdx) => (
+                    {BOP.slice(2).map((total, cellIdx) => (
                       <Table.Cell
                         key={cellIdx}
                         textAlign="right"

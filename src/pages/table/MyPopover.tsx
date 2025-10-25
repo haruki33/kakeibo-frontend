@@ -49,10 +49,13 @@ export default function MyPopover({
     const loadClickedCellTransactions = async () => {
       setIsLoading(true);
       try {
+        console.log(`clicked: ${clickedCategoryId}`);
+
         const data = await fetchWithAuth(
           `/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`
         );
         setPopoverTransaction(data);
+        console.log(data);
       } catch (err) {
         console.error(err);
         onLogout();
