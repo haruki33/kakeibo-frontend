@@ -33,8 +33,6 @@ export default function Signup() {
           `Failed to create transaction: ${res.status} - ${errorText}`
         );
       }
-      const createdSignup = await res.json();
-      console.log(createdSignup);
     } catch (error) {
       console.error("Error creating signup:", error);
     } finally {
