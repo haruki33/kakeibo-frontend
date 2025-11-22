@@ -29,7 +29,6 @@ export default function TransactionsList({
   function handleEditClick(tx: Transaction) {
     setEditTarget(tx);
     setIsDialogOpen(true);
-    console.log(tx);
   }
 
   const deleteTransactionOnList = async (id: string) => {

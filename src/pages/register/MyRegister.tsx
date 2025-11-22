@@ -43,7 +43,6 @@ function MyRegister() {
 
   const addTransaction = (newTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) => [...prev, newTransaction]);
-    console.log("追加された");
   };
 
   const deleteTransaction = (transactionId: string) => {
@@ -58,7 +57,6 @@ function MyRegister() {
         tx.id === updatedTransaction.id ? updatedTransaction : tx
       )
     );
-    console.log("更新された");
   };
 
   useEffect(() => {

@@ -54,7 +54,7 @@ function MyCalendar({
       ).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
       setSelectedDate(localStr);
     } else {
-      console.log("選択された日付が不正です:", value);
+      console.error("選択された日付が不正です:", value);
     }
   };
 

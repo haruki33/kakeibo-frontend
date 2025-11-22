@@ -16,10 +16,12 @@ function MySetting() {
 
   const defaultValues = {
     id: "",
-    name: "給料",
+    name: "",
     type: "income",
     is_deleted: false,
     description: "",
+    registration_date: 1,
+    amount: 0,
   };
 
   const addCategories = (newCategories: Category) => {
@@ -73,11 +75,10 @@ function MySetting() {
   return (
     <>
       <Stack
-        gap="4"
         p="4"
         direction={{ base: "column", md: "row" }}
-        maxW="800px"
-        mx="auto"
+        justify="center"
+        w="full"
       >
         <CategoriesForm
           categories={categories}

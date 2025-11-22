@@ -96,25 +96,33 @@ export default function CategoriesForm({
 
   const formContent = (
     <form onSubmit={handleSubmit(onsubmit)} noValidate>
-      <Stack gap="4" w="full">
+      <Stack w="full">
         <Field.Root invalid={!!errors.name}>
           <Field.Label>カテゴリー名</Field.Label>
           <Input
             variant="outline"
+            placeholder="（例）副業の収入"
             {...register("name", {
               required: "カテゴリー名は必須です",
               validate: (value, formValues) => {
                 const filteredCategoriesWithType = categories.filter((cat) => {
                   return cat.type === formValues.type;
                 });
-                const isExist = filteredCategoriesWithType.some(
-                  (cat) => cat.name === value
+                const existCategory = filteredCategoriesWithType.filter(
+                  (cat) => {
+                    return cat.name === value;
+                  }
                 );
-                return isExist
-                  ? `${
+                const canSave =
+                  existCategory.length === 0 ||
+                  existCategory[0].id === formValues.id
+                    ? true
+                    : false;
+                return canSave
+                  ? true
+                  : `${
                       formValues.type === "income" ? "収入" : "支出"
-                    }内に${value}は既に存在します`
-                  : true;
+                    }内に${value}は既に存在します`;
               },
             })}
           />
@@ -127,9 +135,28 @@ export default function CategoriesForm({
 
         <Field.Root>
           <Field.Label>説明</Field.Label>
-          <Input variant="outline" {...register("description")} />
+          <Input
+            placeholder="（例）副業の収入"
+            variant="outline"
+            {...register("description")}
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>登録日</Field.Label>
+          <Input
+            type="number"
+            variant="outline"
+            {...register("registration_date")}
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>金額</Field.Label>
+          <Input type="number" variant="outline" {...register("amount")} />
         </Field.Root>
       </Stack>
+
       <Button
         type="submit"
         loading={loading}
@@ -137,7 +164,7 @@ export default function CategoriesForm({
         variant="solid"
         loadingText={loadingText}
         w="full"
-        mt={4}
+        mt={8}
       >
         {submitButtonText}
       </Button>
@@ -146,13 +173,8 @@ export default function CategoriesForm({
 
   if (useCard) {
     return (
-      <Card.Root
-        variant="outline"
-        h={{ base: "42vh", md: "55vh" }}
-        w={{ base: "full", md: "60vw" }}
-        size="sm"
-      >
-        <Card.Header pb="4">
+      <Card.Root variant="outline" size="sm" w={{ base: "90vw", md: "30vw" }}>
+        <Card.Header mb={4}>
           <Card.Title>{formTitle}</Card.Title>
         </Card.Header>
         <Card.Body>{formContent}</Card.Body>

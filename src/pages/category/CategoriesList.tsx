@@ -43,8 +43,6 @@ export default function CategoriesList({
       const data = await fetchWithAuth(
         `/transactions?categoryId=${category.id}`
       );
-      console.log(data);
-
       numTransactionsSpecifiedCategory = data.length;
     } catch (error) {
       console.error("Error fetching category details:", error);
@@ -109,13 +107,7 @@ export default function CategoriesList({
 
   return (
     <>
-      <Card.Root
-        variant="outline"
-        h={{ base: "55vh", md: "80vh" }}
-        w={{ base: "full", md: "60vw" }}
-        minH="300px"
-        size="sm"
-      >
+      <Card.Root variant="outline" size="sm" w={{ base: "90vw", md: "60vw" }}>
         <Card.Body>
           <Flex justify="space-between" pb="4" align="center">
             <Card.Title>カテゴリ一覧</Card.Title>
@@ -135,6 +127,20 @@ export default function CategoriesList({
           ) : (
             <Box maxH={{ base: "45vh", md: "70vh" }} overflowY="auto">
               <Table.Root>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeader w="40%">項目</Table.ColumnHeader>
+                    <Table.ColumnHeader w="40%">
+                      <Text>登録日</Text>
+                      <Text fontSize="xs" color="gray.500">
+                        金額
+                      </Text>
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader w="10%" textAlign="center">
+                      編集
+                    </Table.ColumnHeader>
+                  </Table.Row>
+                </Table.Header>
                 <Table.Body>
                   {categories
                     .filter((cat) => !cat.is_deleted)
@@ -156,6 +162,17 @@ export default function CategoriesList({
                             >
                               {cat.description.replace(/(.{20})/g, "$1\n")}
                             </Text>
+                          )}
+                        </Table.Cell>
+
+                        <Table.Cell>
+                          {cat.registration_date !== null && (
+                            <>
+                              <Text>{cat.registration_date}日</Text>
+                              <Text fontSize="xs" color="gray.500">
+                                {cat.amount}円
+                              </Text>
+                            </>
                           )}
                         </Table.Cell>
 
@@ -195,6 +212,7 @@ export default function CategoriesList({
           open={isEditDialogOpen}
           onOpenChange={handleEditDialogClose}
           placement="center"
+          size="md"
         >
           <Portal>
             <Dialog.Backdrop />

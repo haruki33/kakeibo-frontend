@@ -4,4 +4,6 @@ export type Category = {
   type: string;
   is_deleted: boolean;
   description: string;
+  registration_date: number;
+  amount: number;
 };
