@@ -20,8 +20,8 @@ function MySetting() {
     type: "income",
     is_deleted: false,
     description: "",
-    registration_date: 1,
-    amount: 0,
+    registration_date: "",
+    amount: "",
   };
 
   const addCategories = (newCategories: Category) => {
@@ -74,12 +74,7 @@ function MySetting() {
 
   return (
     <>
-      <Stack
-        p="4"
-        direction={{ base: "column", md: "row" }}
-        justify="center"
-        w="full"
-      >
+      <Stack direction={{ base: "column", md: "row" }} h="100%" w="100%" p={4}>
         <CategoriesForm
           categories={categories}
           defaultValues={defaultValues}

@@ -4,6 +4,11 @@ export type Category = {
   type: string;
   is_deleted: boolean;
   description: string;
-  registration_date: number;
-  amount: number;
+  registration_date: string;
+  amount: string;
+};
+
+export type typeSelect = {
+  value: string;
+  label: string;
 };
