@@ -107,7 +107,7 @@ export default function CategoriesList({
 
   return (
     <>
-      <Card.Root variant="outline" size="sm" w={{ base: "90vw", md: "60vw" }}>
+      <Card.Root variant="outline" size="sm" w={{ base: "100%", md: "70%" }}>
         <Card.Body>
           <Flex justify="space-between" pb="4" align="center">
             <Card.Title>カテゴリ一覧</Card.Title>
@@ -121,7 +121,7 @@ export default function CategoriesList({
             </Button>
           </Flex>
           {isLoadingCategories ? (
-            <Flex justify="center" align="center" h="100%">
+            <Flex>
               <Spinner color="blue.500" animationDuration="0.8s" />
             </Flex>
           ) : (
