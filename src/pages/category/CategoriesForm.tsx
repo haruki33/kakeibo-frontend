@@ -5,12 +5,12 @@ import {
   createListCollection,
   Field,
   Input,
-  Select,
   Stack,
 } from "@chakra-ui/react";
-import type { Category } from "../../types/mysetting.ts";
+import type { Category, typeSelect } from "../../types/mysetting.ts";
 import { useAuth } from "../../utils/useAuth.tsx";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import FormSelect from "../../components/FormSelect.tsx";
 
 type CategoriesFormProps = {
   categories: Category[];
@@ -21,6 +21,23 @@ type CategoriesFormProps = {
   loadingText: string;
   useCard: boolean;
 };
+
+const types = createListCollection<typeSelect>({
+  items: [
+    { value: "income", label: "収入" },
+    { value: "expense", label: "支出" },
+  ],
+});
+
+const dates = createListCollection<typeSelect>({
+  items: [
+    { value: "", label: "登録日なし" },
+    ...Array.from({ length: 31 }, (_, i) => ({
+      value: `${i + 1}`,
+      label: `${i + 1}日`,
+    })),
+  ],
+});
 
 export default function CategoriesForm({
   categories,
@@ -39,9 +56,11 @@ export default function CategoriesForm({
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<Category>({
     defaultValues,
   });
+  const registrationDate = watch("registration_date");
 
   const onsubmit = async (data: Category) => {
     setLoading(true);
@@ -56,47 +75,9 @@ export default function CategoriesForm({
     }
   };
 
-  const DialogTypesSelect = () => {
-    return (
-      <Controller
-        name="type"
-        control={control}
-        render={({ field }) => (
-          <Select.Root
-            collection={types}
-            name={field.name}
-            value={[field.value]}
-            onValueChange={(e) => field.onChange(e.value[0])}
-          >
-            <Select.HiddenSelect />
-            <Select.Label>種類</Select.Label>
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="収入" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Select.Positioner>
-              <Select.Content>
-                {types.items.map((type) => (
-                  <Select.Item item={type} key={type.value}>
-                    {type.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Select.Root>
-        )}
-      />
-    );
-  };
-
   const formContent = (
     <form onSubmit={handleSubmit(onsubmit)} noValidate>
-      <Stack w="full">
+      <Stack>
         <Field.Root invalid={!!errors.name}>
           <Field.Label>カテゴリー名</Field.Label>
           <Input
@@ -130,7 +111,13 @@ export default function CategoriesForm({
         </Field.Root>
 
         <Field.Root>
-          <DialogTypesSelect />
+          <FormSelect
+            name="type"
+            control={control}
+            collections={types}
+            label="種類"
+            placeholder="収入"
+          />
         </Field.Root>
 
         <Field.Root>
@@ -143,17 +130,23 @@ export default function CategoriesForm({
         </Field.Root>
 
         <Field.Root>
-          <Field.Label>登録日</Field.Label>
-          <Input
-            type="number"
-            variant="outline"
-            {...register("registration_date")}
+          <FormSelect
+            name="registration_date"
+            control={control}
+            collections={dates}
+            label="登録日"
+            placeholder="登録日なし"
           />
         </Field.Root>
 
         <Field.Root>
           <Field.Label>金額</Field.Label>
-          <Input type="number" variant="outline" {...register("amount")} />
+          <Input
+            type="number"
+            variant="outline"
+            {...register("amount")}
+            disabled={registrationDate === "" || registrationDate === null}
+          />
         </Field.Root>
       </Stack>
 
@@ -173,8 +166,8 @@ export default function CategoriesForm({
 
   if (useCard) {
     return (
-      <Card.Root variant="outline" size="sm" w={{ base: "90vw", md: "30vw" }}>
-        <Card.Header mb={4}>
+      <Card.Root variant="outline" size="sm" w={{ base: "100%", md: "30%" }}>
+        <Card.Header>
           <Card.Title>{formTitle}</Card.Title>
         </Card.Header>
         <Card.Body>{formContent}</Card.Body>
@@ -184,10 +177,3 @@ export default function CategoriesForm({
 
   return formContent;
 }
-
-const types = createListCollection({
-  items: [
-    { value: "income", label: "収入" },
-    { value: "expense", label: "支出" },
-  ],
-});
