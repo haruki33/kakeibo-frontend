@@ -51,7 +51,12 @@ export default function MyDrawer() {
               )}
             </Box>
           ))}
-          <Box pb="8">
+          <Box>
+            <Link to="/AccountSettings" onClick={() => setIsOpen(false)}>
+              <Heading size={{ base: "lg", md: "xl" }}>アカウント設定</Heading>
+            </Link>
+          </Box>
+          <Box>
             <Link to="/" onClick={onLogout}>
               <Heading size={{ base: "lg", md: "xl" }}>ログアウト</Heading>
             </Link>

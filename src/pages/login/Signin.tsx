@@ -57,12 +57,6 @@ export default function Signin() {
           >
             ログイン
           </Button>
-          {/* <PositiveButton
-            loading={loading}
-            onClick={handleLogin}
-            loadingText="ログイン中..."
-            buttonText="ログイン"
-          /> */}
         </Card.Footer>
       </Card.Root>
     </>

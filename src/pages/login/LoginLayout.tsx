@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, VStack } from "@chakra-ui/react";
 import { Outlet, NavLink, type NavLinkRenderProps } from "react-router";
 
 const loginPages = [
@@ -25,31 +25,40 @@ export default function LoginLayout() {
         justifyContent="center"
         alignItems="center"
       >
-        <Box
-          bg="white"
-          w={{ base: "80vw", md: "40vw" }}
-          h={{ base: "50vh", md: "65vh" }}
-          boxShadow="lg"
-        >
-          <Box>
-            <Flex
-              justify="space-evenly"
-              textAlign="center"
-              alignItems="center"
-              h="100%"
-              p="4"
-            >
-              {loginPages.map((loginPage) => (
-                <NavLink key={loginPage.path} to={loginPage.path} style={style}>
-                  {loginPage.page}
-                </NavLink>
-              ))}
-            </Flex>
+        <VStack>
+          <Box
+            bg="white"
+            w={{ base: "80vw", md: "40vw" }}
+            h={{ base: "50vh", md: "65vh" }}
+            boxShadow="lg"
+          >
+            <Box>
+              <Flex
+                justify="space-evenly"
+                textAlign="center"
+                alignItems="center"
+                h="100%"
+                p="4"
+              >
+                {loginPages.map((loginPage) => (
+                  <NavLink
+                    key={loginPage.path}
+                    to={loginPage.path}
+                    style={style}
+                  >
+                    {loginPage.page}
+                  </NavLink>
+                ))}
+              </Flex>
+            </Box>
+            <Box>
+              <Outlet />
+            </Box>
           </Box>
-          <Box>
-            <Outlet />
-          </Box>
-        </Box>
+          {/* <Link to="AccountSettings/Password">
+            パスワードをお忘れの方はこちら
+          </Link> */}
+        </VStack>
       </Box>
     </>
   );
