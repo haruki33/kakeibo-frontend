@@ -10,6 +10,7 @@ import MainLayout from "./pages/mainlayout/MainLayout";
 import MyRegister from "./pages/register/MyRegister";
 import MyTable from "./pages/table/MyTable";
 import NoMatch from "./pages/mainlayout/NoMatch";
+import Profile from "./pages/AccountSettings/AccountSettings";
 
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
@@ -128,6 +129,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MySetting />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="AccountSettings"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

@@ -139,14 +139,11 @@ export default function CategoriesForm({
           />
         </Field.Root>
 
-        <Field.Root>
+        <Field.Root
+          disabled={registrationDate === "" || registrationDate === null}
+        >
           <Field.Label>金額</Field.Label>
-          <Input
-            type="number"
-            variant="outline"
-            {...register("amount")}
-            disabled={registrationDate === "" || registrationDate === null}
-          />
+          <Input type="number" variant="outline" {...register("amount")} />
         </Field.Root>
       </Stack>
 
