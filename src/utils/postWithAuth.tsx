@@ -1,10 +1,10 @@
-import type { Category } from "../types/mysetting.ts";
+import type { CategoryType } from "../types/mysetting.ts";
 import type { Transaction } from "../types/myregister.ts";
 import type { CurrentPasswordType } from "@/types/accountSettings";
 
 export const postWithAuth = async (
   url: string,
-  postData: Category | Transaction | CurrentPasswordType
+  postData: CategoryType | Transaction | CurrentPasswordType
 ) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   let accessToken = localStorage.getItem("accessToken");

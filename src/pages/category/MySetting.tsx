@@ -1,99 +1,65 @@
 import { useState, useEffect } from "react";
-import CategoriesForm from "./CategoriesForm.tsx";
-import CategoriesList from "./CategoriesList.tsx";
-import { Stack } from "@chakra-ui/react";
+import { Container, Tabs } from "@chakra-ui/react";
 
-import type { Category } from "../../types/mysetting.ts";
-import { useAuth } from "../../utils/useAuth.tsx";
 import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
-import { postWithAuth } from "@/utils/postWithAuth.tsx";
+import CategoryAdd from "./CategoryAdd.tsx";
+import ActiveCategoriesList from "./ActiveCategoriesList.tsx";
+import { sortCategories } from "./sortCategories.tsx";
+
+type CategoryType = {
+  id: string;
+  name: string;
+  type: "income" | "expense";
+  is_deleted: boolean;
+  description: string;
+  registration_date: string | null;
+  amount: string | null;
+};
 
 function MySetting() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] =
     useState<boolean>(false);
-  const { onLogout } = useAuth();
-
-  const defaultValues = {
-    id: "",
-    name: "",
-    type: "income",
-    is_deleted: false,
-    description: "",
-    registration_date: "",
-    amount: "",
-  };
-
-  const addCategories = (newCategories: Category) => {
-    setCategories((prev: Category[]) => {
-      const updatedCategories = [...prev, newCategories];
-      return sortCategories(updatedCategories);
-    });
-  };
-
-  const deleteCategories = (categoryId: string) => {
-    setCategories((prev: Category[]) =>
-      prev.filter((cat) => cat.id !== categoryId)
-    );
-  };
-
-  const updatedCategory = (updatedCategory: Category) => {
-    setCategories((prev: Category[]) => {
-      const updated = prev.map((cat) =>
-        cat.id === updatedCategory.id ? updatedCategory : cat
-      );
-      return sortCategories(updated);
-    });
-  };
-
-  const sortCategories = (categories: Category[]) => {
-    return categories.sort((a, b) => {
-      if (a.type !== b.type) {
-        return a.type === "income" ? -1 : 1;
-      }
-      return a.name.localeCompare(b.name, "ja");
-    });
-  };
 
   useEffect(() => {
     const loadCategories = async () => {
-      setIsLoadingCategories(true);
       try {
+        setIsLoadingCategories(true);
         const data = await fetchWithAuth("/categories");
         setCategories(sortCategories(data));
       } catch (err) {
         console.error(err);
-        onLogout();
       } finally {
         setIsLoadingCategories(false);
       }
     };
 
     loadCategories();
-  }, [onLogout]);
+  }, []);
 
   return (
     <>
-      <Stack direction={{ base: "column", md: "row" }} h="100%" w="100%" p={4}>
-        <CategoriesForm
-          categories={categories}
-          defaultValues={defaultValues}
-          handleCategory={async (data: Category) => {
-            const res = await postWithAuth("/categories", data);
-            addCategories(res);
-          }}
-          formTitle="カテゴリ追加"
-          submitButtonText="追加"
-          loadingText="追加中..."
-          useCard={true}
-        />
-        <CategoriesList
-          isLoadingCategories={isLoadingCategories}
-          categories={categories}
-          updateCategories={updatedCategory}
-          deleteCategories={deleteCategories}
-        />
-      </Stack>
+      <Container p={8}>
+        <Tabs.Root defaultValue="add">
+          <Tabs.List>
+            <Tabs.Trigger value="add">カテゴリー追加</Tabs.Trigger>
+            <Tabs.Trigger value="list">カテゴリー一覧</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="add">
+            <CategoryAdd
+              categories={categories}
+              setCategories={setCategories}
+            />
+          </Tabs.Content>
+          <Tabs.Content value="list">
+            <ActiveCategoriesList
+              isLoadingCategories={isLoadingCategories}
+              categories={categories}
+              setCategories={setCategories}
+            />
+          </Tabs.Content>
+        </Tabs.Root>
+      </Container>
     </>
   );
 }

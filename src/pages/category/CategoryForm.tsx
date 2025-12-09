@@ -1,25 +1,32 @@
 import { useState } from "react";
 import {
   Button,
-  Card,
   createListCollection,
   Field,
   Input,
   Stack,
 } from "@chakra-ui/react";
-import type { Category, typeSelect } from "../../types/mysetting.ts";
+import type { typeSelect } from "../../types/mysetting.ts";
 import { useAuth } from "../../utils/useAuth.tsx";
 import { useForm } from "react-hook-form";
 import FormSelect from "../../components/FormSelect.tsx";
 
+type CategoryType = {
+  id: string;
+  name: string;
+  type: "income" | "expense";
+  is_deleted: boolean;
+  description: string;
+  registration_date: string | null;
+  amount: string | null;
+};
+
 type CategoriesFormProps = {
-  categories: Category[];
-  defaultValues: Category;
-  handleCategory: (data: Category) => Promise<void>;
-  formTitle: string;
+  categories: CategoryType[];
+  defaultValues: CategoryType;
+  handleCategory: (data: CategoryType) => Promise<void>;
   submitButtonText: string;
   loadingText: string;
-  useCard: boolean;
 };
 
 const types = createListCollection<typeSelect>({
@@ -39,14 +46,12 @@ const dates = createListCollection<typeSelect>({
   ],
 });
 
-export default function CategoriesForm({
+export default function CategoryForm({
   categories,
   handleCategory,
   defaultValues,
-  formTitle,
   submitButtonText,
   loadingText,
-  useCard,
 }: CategoriesFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const { onLogout } = useAuth();
@@ -57,12 +62,12 @@ export default function CategoriesForm({
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<Category>({
+  } = useForm<CategoryType>({
     defaultValues,
   });
   const registrationDate = watch("registration_date");
 
-  const onsubmit = async (data: Category) => {
+  const onsubmit = async (data: CategoryType) => {
     setLoading(true);
 
     try {
@@ -75,7 +80,7 @@ export default function CategoriesForm({
     }
   };
 
-  const formContent = (
+  return (
     <form onSubmit={handleSubmit(onsubmit)} noValidate>
       <Stack>
         <Field.Root invalid={!!errors.name}>
@@ -160,17 +165,4 @@ export default function CategoriesForm({
       </Button>
     </form>
   );
-
-  if (useCard) {
-    return (
-      <Card.Root variant="outline" size="sm" w={{ base: "100%", md: "30%" }}>
-        <Card.Header>
-          <Card.Title>{formTitle}</Card.Title>
-        </Card.Header>
-        <Card.Body>{formContent}</Card.Body>
-      </Card.Root>
-    );
-  }
-
-  return formContent;
 }
