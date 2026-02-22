@@ -33,7 +33,7 @@ export default function DeletedCategoriesList({
       if (!res.ok) throw new Error("Failed to delete category");
 
       const afterDestroyCategories = categories.filter(
-        (cat) => cat.id !== category.id
+        (cat) => cat.id !== category.id,
       );
       setCategories(afterDestroyCategories);
     } catch (error) {
@@ -45,7 +45,7 @@ export default function DeletedCategoriesList({
     try {
       const restoreCategory = await putWithAuth(
         `/categories/${category.id}/restore`,
-        category
+        category,
       );
       const updatedCategories = categories.map((cat) => {
         return cat.id === restoreCategory.id ? restoreCategory : cat;
@@ -65,11 +65,12 @@ export default function DeletedCategoriesList({
         }
       }}
       placement="center"
+      size="cover"
     >
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content maxW={{ base: "300px", md: "810px" }}>
+          <Dialog.Content>
             <Dialog.CloseTrigger asChild>
               <CloseButton />
             </Dialog.CloseTrigger>
@@ -82,7 +83,6 @@ export default function DeletedCategoriesList({
                   isLoadingCategories={false}
                   categories={categories.filter((cat) => cat.is_deleted)}
                   handleDelete={destroyCategory}
-                  positiveButtonText="復活"
                   positiveButtonIcon={<FaTrashRestore />}
                   UpdateCategory={restoreCategory}
                   ButtonText="復活"

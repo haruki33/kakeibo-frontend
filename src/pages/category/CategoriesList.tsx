@@ -2,13 +2,11 @@ import { useState } from "react";
 import {
   Button,
   Text,
-  Card,
   Flex,
   Badge,
-  Separator,
-  VStack,
-  Wrap,
   Spinner,
+  Table,
+  VStack,
 } from "@chakra-ui/react";
 import { AiFillDelete } from "react-icons/ai";
 import EditDialog from "./EditDialog.tsx";
@@ -27,7 +25,6 @@ type categoriesListProps = {
   isLoadingCategories: boolean;
   categories: CategoryType[];
   handleDelete: (category: CategoryType) => void;
-  positiveButtonText: string;
   positiveButtonIcon: React.ReactNode;
   UpdateCategory: (category: CategoryType) => void;
   ButtonText: string;
@@ -38,7 +35,6 @@ export default function CategoriesList({
   isLoadingCategories,
   categories,
   handleDelete,
-  positiveButtonText,
   positiveButtonIcon,
   UpdateCategory,
   ButtonText,
@@ -59,78 +55,74 @@ export default function CategoriesList({
           <Spinner color="blue.500" animationDuration="0.8s" />
         </Flex>
       ) : (
-        <Wrap gap="2" justify="flex-start">
-          {categories.map((cat) => (
-            <Card.Root
-              variant="elevated"
-              minW={{ base: "100%", md: "150px" }}
-              key={cat.id}
-            >
-              <Card.Body>
-                <Flex justify="space-between">
-                  <Card.Title maxW="150px">
+        // 大きさ問題（テーブルが原因）
+        <Table.ScrollArea borderWidth="1px" overflowY="auto" h="65vh">
+          <Table.Root size="sm" stickyHeader>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>名前</Table.ColumnHeader>
+                <Table.ColumnHeader></Table.ColumnHeader>
+                <Table.ColumnHeader></Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {categories.map((cat) => (
+                <Table.Row key={cat.id}>
+                  <Table.Cell>
                     <Text
                       truncate
+                      textStyle="md"
+                      fontWeight="bold"
                       color={cat.type === "income" ? "#60A5FA" : "#F87171"}
                     >
                       {cat.name}
                     </Text>
-                  </Card.Title>
-                  {cat.registration_date && (
-                    <Badge colorPalette="green" size="sm">
-                      定期
-                    </Badge>
+                    <Text truncate textStyle="sm">
+                      {cat.description}
+                    </Text>
+                  </Table.Cell>
+                  {cat.registration_date ? (
+                    <Table.Cell>
+                      <Flex gap="2" align="bottom">
+                        <Badge colorPalette="green" size="sm">
+                          定期
+                        </Badge>
+                        <VStack gap="0">
+                          <Text textStyle="sm">
+                            登録日 {cat.registration_date} 日
+                          </Text>
+                          <Text textStyle="sm">金額 {cat.amount} 円</Text>
+                        </VStack>
+                      </Flex>
+                    </Table.Cell>
+                  ) : (
+                    <Table.Cell>
+                      <></>
+                    </Table.Cell>
                   )}
-                </Flex>
-                <Card.Description maxW="150px">
-                  <Text
-                    truncate
-                    as="span" // <Text> => <p> となるので<p><p>...</p></p>となってしまうためspanに変更
-                  >
-                    {cat.description}
-                  </Text>
-                </Card.Description>
-                <Separator my="2" />
-                {cat.registration_date && (
-                  <Flex justify="space-between">
-                    <VStack align="flex-start" gap="0">
-                      <Text textStyle="sm" fontWeight="medium">
-                        登録日
-                      </Text>
-                      <>{cat.registration_date}</>
-                    </VStack>
-                    <VStack align="flex-start" gap="0">
-                      <Text textStyle="sm" fontWeight="medium">
-                        金額
-                      </Text>
-                      <Text>{cat.amount} 円</Text>
-                    </VStack>
-                  </Flex>
-                )}
-              </Card.Body>
-              <Card.Footer>
-                <Button
-                  variant="subtle"
-                  colorPalette="green"
-                  flex="1"
-                  onClick={() => handlePositiveButtonClick(cat)}
-                >
-                  {positiveButtonIcon}
-                  {positiveButtonText}
-                </Button>
-                <Button
-                  variant="subtle"
-                  colorPalette="red"
-                  flex="1"
-                  onClick={() => handleDelete(cat)}
-                >
-                  <AiFillDelete />
-                  削除
-                </Button>
-              </Card.Footer>
-            </Card.Root>
-          ))}
-        </Wrap>
+                  <Table.Cell>
+                    <Flex justify="flex-end" gap="2">
+                      <Button
+                        variant="subtle"
+                        colorPalette="green"
+                        onClick={() => handlePositiveButtonClick(cat)}
+                      >
+                        {positiveButtonIcon}
+                      </Button>
+                      <Button
+                        variant="subtle"
+                        colorPalette="red"
+                        onClick={() => handleDelete(cat)}
+                      >
+                        <AiFillDelete />
+                      </Button>
+                    </Flex>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </Table.ScrollArea>
       )}
 
       {isEditDialogOpen && editCategory && (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Card, Flex } from "@chakra-ui/react";
+import { Button, Card, Flex } from "@chakra-ui/react";
 import CategoriesList from "./CategoriesList.tsx";
 import DeletedCategoriesList from "./DeletedCategoriesList.tsx";
 import { fetchWithAuth } from "@/utils/fetchWithAuth.tsx";
@@ -21,7 +21,7 @@ type categoriesListProps = {
   isLoadingCategories: boolean;
   categories: CategoryType[];
   setCategories: (
-    category: CategoryType[] | ((prev: CategoryType[]) => CategoryType[])
+    category: CategoryType[] | ((prev: CategoryType[]) => CategoryType[]),
   ) => void;
 };
 
@@ -37,7 +37,7 @@ export default function ActiveCategoriesList({
     let numTransactionsSpecifiedCategory = 0;
     try {
       const data = await fetchWithAuth(
-        `/transactions?categoryId=${category.id}`
+        `/transactions?categoryId=${category.id}`,
       );
       numTransactionsSpecifiedCategory = data.length;
     } catch (error) {
@@ -47,7 +47,7 @@ export default function ActiveCategoriesList({
 
     if (
       !confirm(
-        `"${category.name}" には ${numTransactionsSpecifiedCategory} 件の登録があります．\n本当に削除しますか？`
+        `"${category.name}" には ${numTransactionsSpecifiedCategory} 件の登録があります．\n本当に削除しますか？`,
       )
     )
       return;
@@ -55,7 +55,7 @@ export default function ActiveCategoriesList({
     try {
       const deletedCategory = await putWithAuth(
         `/categories/${category.id}/delete`,
-        category
+        category,
       );
       const updatedCategories = categories.map((cat) => {
         if (cat.id === deletedCategory.id) {
@@ -98,18 +98,15 @@ export default function ActiveCategoriesList({
           </Flex>
         </Card.Header>
         <Card.Body>
-          <Box p={2}>
-            <CategoriesList
-              isLoadingCategories={isLoadingCategories}
-              categories={categories.filter((cat) => !cat.is_deleted)}
-              handleDelete={deactiveCategory}
-              positiveButtonText="修正"
-              positiveButtonIcon={<AiFillEdit />}
-              UpdateCategory={UpdateCategory}
-              ButtonText="更新"
-              ButtonLoadingText="更新中..."
-            />
-          </Box>
+          <CategoriesList
+            isLoadingCategories={isLoadingCategories}
+            categories={categories.filter((cat) => !cat.is_deleted)}
+            handleDelete={deactiveCategory}
+            positiveButtonIcon={<AiFillEdit />}
+            UpdateCategory={UpdateCategory}
+            ButtonText="更新"
+            ButtonLoadingText="更新中..."
+          />
         </Card.Body>
       </Card.Root>
 
