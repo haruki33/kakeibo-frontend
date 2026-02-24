@@ -49,7 +49,7 @@ const AuthProvider = ({ children }: AuthProviderType) => {
         console.error("Response status:", res.status);
         console.error("Response body:", errorText);
         throw new Error(
-          `Failed to create transaction: ${res.status} - ${errorText}`
+          `Failed to create transaction: ${res.status} - ${errorText}`,
         );
       }
       const createdSignin = await res.json();
@@ -92,7 +92,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteType) => {
   return children;
 };
 
-// ログイン状態に基づいてリダイレクトするコンポーネント
 const RedirectBasedOnAuth = () => {
   const { token } = useAuth();
   return token ? <Navigate to="/MyRegister" replace /> : <Signin />;

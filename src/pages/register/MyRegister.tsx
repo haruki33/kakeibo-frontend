@@ -4,26 +4,28 @@ import Calendar from "./Calendar.tsx";
 import TransactionsList from "./TransactionsList.tsx";
 import TransactionsForm from "./TransactionsForm.tsx";
 import {
-  Box,
-  Button,
   Card,
-  Flex,
-  Spinner,
+  Heading,
   Stack,
+  IconButton,
+  Center,
+  Spinner,
   VStack,
+  Text,
 } from "@chakra-ui/react";
 
 import type { Category, Transaction } from "../../types/myregister.ts";
 import { useAuth } from "../../utils/useAuth.tsx";
 import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 import { postWithAuth } from "@/utils/postWithAuth.tsx";
+import { AiFillPlusCircle } from "react-icons/ai";
 
 function MyRegister() {
   const [selectedYearAndMonth, setSelectedYearAndMonth] = useState(
-    `${new Date().toISOString().slice(0, 7)}`
+    `${new Date().toISOString().slice(0, 7)}`,
   );
   const [selectedDate, setSelectedDate] = useState(
-    `${new Date().toISOString().slice(0, 10)}`
+    `${new Date().toISOString().slice(0, 10)}`,
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -47,15 +49,15 @@ function MyRegister() {
 
   const deleteTransaction = (transactionId: string) => {
     setTransactions((prev: Transaction[]) =>
-      prev.filter((tx) => tx.id !== transactionId)
+      prev.filter((tx) => tx.id !== transactionId),
     );
   };
 
   const updatedTransaction = (updatedTransaction: Transaction) => {
     setTransactions((prev: Transaction[]) =>
       prev.map((tx) =>
-        tx.id === updatedTransaction.id ? updatedTransaction : tx
-      )
+        tx.id === updatedTransaction.id ? updatedTransaction : tx,
+      ),
     );
   };
 
@@ -78,7 +80,7 @@ function MyRegister() {
       setIsLoadingTransactions(true);
       try {
         const data = await fetchWithAuth(
-          `/transactions?month=${selectedYearAndMonth}`
+          `/transactions?month=${selectedYearAndMonth}`,
         );
         setTransactions(data);
       } catch (err) {
@@ -95,77 +97,85 @@ function MyRegister() {
     <>
       <Stack
         direction={{ base: "column", md: "row" }}
-        gap="4"
         p="4"
         w="full"
         justify="center"
       >
         <Card.Root
-          h={{ base: "40vh", md: "80vh" }}
+          h={{ base: "45vh", md: "80vh" }}
           w={{ base: "full", md: "60vw" }}
-          minH="400px"
+          minH="340px"
+          borderRadius={30}
         >
           <Calendar
             setYearAndMonth={setSelectedYearAndMonth}
+            selectedYearAndMonth={selectedYearAndMonth}
             setSelectedDate={setSelectedDate}
             selectedDate={selectedDate}
             transactions={transactions}
           />
         </Card.Root>
-        <VStack>
-          <Card.Root
-            h={{ base: "50vh", md: "80vh" }}
-            w={{ base: "full", md: "30vw" }}
-            minH="400px"
-            flex="1"
-            size="sm"
-          >
-            <Card.Body>
-              <Card.Title textStyle={{ base: "lg", md: "xl" }} mb="4">
-                お金の記録
-              </Card.Title>
-              {isLoadingTransactions ? (
-                <Flex justify="center" align="center" h="100%" minH="200px">
-                  <Spinner color="blue.500" animationDuration="0.8s" />
-                </Flex>
-              ) : (
-                <Box maxH={{ base: "30vh", md: "400px" }} overflowY="auto">
-                  <TransactionsList
-                    categories={categories}
-                    transactions={transactions}
-                    selectedDate={selectedDate}
-                    deleteTransaction={deleteTransaction}
-                    updateTransaction={updatedTransaction}
-                  />
-                </Box>
-              )}
-            </Card.Body>
-            <Button
-              m="4"
-              colorPalette="green"
-              variant="solid"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              新しい記録を追加
-            </Button>
 
-            {isDialogOpen && (
-              <TransactionsForm
-                categories={categories}
-                isDialogOpen={isDialogOpen}
-                setIsDialogOpen={setIsDialogOpen}
-                handleTransaction={async (data) => {
-                  const res = await postWithAuth("/transactions", data);
-                  addTransaction(res);
-                }}
-                defaultValues={defaultValues}
-                formTitle="お金の新規登録"
-                submitButtonText="保存"
-                loadingText="保存中..."
-              />
-            )}
-          </Card.Root>
-        </VStack>
+        <Heading color="gray.400" margin="8pt 0pt">
+          {selectedDate} の記録
+        </Heading>
+
+        {isLoadingTransactions ? (
+          <Center
+            backgroundColor="rgba(160, 174, 192, 0.2)"
+            h="25vh"
+            borderRadius={30}
+          >
+            <VStack colorPalette="gray.400">
+              <Spinner color="gray.400" />
+              <Text color="colorPalette.600">Loading...</Text>
+            </VStack>
+          </Center>
+        ) : (
+          <TransactionsList
+            categories={categories}
+            transactions={transactions}
+            selectedDate={selectedDate}
+            deleteTransaction={deleteTransaction}
+            updateTransaction={updatedTransaction}
+          />
+        )}
+
+        <IconButton
+          position="fixed"
+          bottom={10}
+          right={0}
+          m="4"
+          height={81}
+          width={81}
+          borderRadius={30}
+          colorPalette="green"
+          variant="solid"
+          onClick={() => setIsDialogOpen(true)}
+        >
+          <AiFillPlusCircle
+            style={{
+              width: "60%",
+              height: "60%",
+            }}
+          />
+        </IconButton>
+
+        {isDialogOpen && (
+          <TransactionsForm
+            categories={categories}
+            isDialogOpen={isDialogOpen}
+            setIsDialogOpen={setIsDialogOpen}
+            handleTransaction={async (data) => {
+              const res = await postWithAuth("/transactions", data);
+              addTransaction(res);
+            }}
+            defaultValues={defaultValues}
+            formTitle="お金の新規登録"
+            submitButtonText="保存"
+            loadingText="保存中..."
+          />
+        )}
       </Stack>
     </>
   );
