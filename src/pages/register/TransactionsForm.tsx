@@ -60,7 +60,7 @@ export default function TransactionsForm({
   });
 
   const categoriesType = Object.entries(
-    groupBy(categoriesCollection.items, (item) => item.type)
+    groupBy(categoriesCollection.items, (item) => item.type),
   );
 
   const onsubmit = async (data: Transaction) => {
@@ -91,7 +91,7 @@ export default function TransactionsForm({
             noValidate
             style={{ width: "80%" }}
           >
-            <Dialog.Content>
+            <Dialog.Content borderRadius="4xl">
               <Dialog.CloseTrigger asChild>
                 <CloseButton />
               </Dialog.CloseTrigger>
@@ -166,6 +166,8 @@ export default function TransactionsForm({
                   variant="solid"
                   loadingText={loadingText}
                   w="full"
+                  marginBottom="8pt"
+                  rounded="3xl"
                 >
                   {submitButtonText}
                 </Button>
@@ -193,7 +195,7 @@ export default function TransactionsForm({
               field.onChange(value[0]);
               setValue(
                 "type",
-                categories.find((cat) => cat.id === value[0])?.type || ""
+                categories.find((cat) => cat.id === value[0])?.type || "",
               );
             }}
           >

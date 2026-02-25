@@ -171,9 +171,9 @@ function MyRegister() {
               addTransaction(res);
             }}
             defaultValues={defaultValues}
-            formTitle="お金の新規登録"
-            submitButtonText="保存"
-            loadingText="保存中..."
+            formTitle="お金の新規記録"
+            submitButtonText="記録"
+            loadingText="記録中..."
           />
         )}
       </Stack>
