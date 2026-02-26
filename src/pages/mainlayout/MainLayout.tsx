@@ -36,7 +36,9 @@ export default function MainLayout() {
       <Box as="header" bg="white" boxShadow="sm">
         <Heading p="4">My Money</Heading>
       </Box>
-      <Outlet />
+      <Box as="main" minH="calc(100vh - 64px - 5vh)">
+        <Outlet />
+      </Box>
       <Flex
         justify="space-evenly"
         bg="white"

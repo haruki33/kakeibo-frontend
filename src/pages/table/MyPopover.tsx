@@ -1,5 +1,4 @@
 import {
-  Table,
   Text,
   Portal,
   Dialog,
@@ -7,6 +6,11 @@ import {
   Flex,
   Spinner,
   IconButton,
+  ScrollArea,
+  Center,
+  VStack,
+  Box,
+  Separator,
 } from "@chakra-ui/react";
 import type { Category, Transaction } from "../../types/myregister.ts";
 import { useEffect, useState } from "react";
@@ -15,7 +19,7 @@ import { fetchWithAuth } from "../../utils/fetchWithAuth.tsx";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import TransactionsForm from "../register/TransactionsForm.tsx";
 import { putWithAuth } from "@/utils/putWithAuth.tsx";
-import { deleteWithAuth } from "@/utils/deleteWithAuth.tsx";
+import DeleteDialog from "../register/DeleteDialog.tsx";
 
 type MyPopoverProps = {
   isPopoverOpen: boolean;
@@ -24,8 +28,15 @@ type MyPopoverProps = {
   clickedCategoryId: string;
   clickedMonthIdx: number;
   setIsUpdatingTransactionInTable: (
-    isUpdatingTransactionInTable: boolean
+    isUpdatingTransactionInTable: boolean,
   ) => void;
+};
+
+const formatDate = (data: Transaction[]) => {
+  return data.map((tx) => ({
+    ...tx,
+    date: new Date(tx.date).toLocaleString("ja-JP").split(" ")[0],
+  }));
 };
 
 export default function MyPopover({
@@ -37,22 +48,32 @@ export default function MyPopover({
   setIsUpdatingTransactionInTable,
 }: MyPopoverProps) {
   const [popoverTransaction, setPopoverTransaction] = useState<Transaction[]>(
-    []
+    [],
   );
-  const [editTarget, setEditTarget] = useState<Transaction | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { onLogout } = useAuth();
 
+  const [editTarget, setEditTarget] = useState<Transaction | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState<boolean>(false);
+  const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null);
+
+  const RefreshTable = (id: string) => {
+    if (!id) return;
+    setIsDialogOpen(false);
+    setIsUpdatingTransactionInTable(true);
+  };
+
   useEffect(() => {
     const loadClickedCellTransactions = async () => {
-      setIsLoading(true);
       try {
+        setIsLoading(true);
         const data = await fetchWithAuth(
-          `/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`
+          `/transactions/${clickedCategoryId}/${clickedMonthIdx + 1}`,
         );
-        setPopoverTransaction(data);
+        const formattedDate = formatDate(data);
+        setPopoverTransaction(formattedDate);
       } catch (err) {
         console.error(err);
         onLogout();
@@ -83,17 +104,6 @@ export default function MyPopover({
     setIsDialogOpen(true);
   }
 
-  const deleteTransactionOnList = async (id: string) => {
-    if (!confirm("本当に削除しますか？")) return;
-    try {
-      await deleteWithAuth(`/transactions/${id}`);
-      setIsUpdatingTransactionInTable(true);
-    } catch (err) {
-      console.error(err);
-      onLogout();
-    }
-  };
-
   return (
     <>
       <Dialog.Root
@@ -108,77 +118,116 @@ export default function MyPopover({
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content>
+            <Dialog.Content borderRadius={30} width="90%" h="60vh">
               <Dialog.CloseTrigger asChild>
                 <CloseButton />
               </Dialog.CloseTrigger>
               <Dialog.Header>
-                <Dialog.Title>お金の詳細記録</Dialog.Title>
+                <Dialog.Title>
+                  {clickedMonthIdx + 1}月の
+                  {categories.find((cat) => cat.id === clickedCategoryId)?.name}
+                  の詳細記録
+                </Dialog.Title>
               </Dialog.Header>
-              <Dialog.Body>
+              <Dialog.Body
+                borderRadius={30}
+                display="flex"
+                flexDirection="column"
+                p={0}
+                minH={0}
+              >
                 {isLoading ? (
-                  <Flex justify="center" align="center" h="100%">
-                    <Spinner color="blue.500" animationDuration="0.8s" />
-                  </Flex>
+                  <Center borderRadius={30} h="100%">
+                    <VStack colorPalette="gray.400">
+                      <Spinner color="gray.400" />
+                      <Text color="colorPalette.600">Loading...</Text>
+                    </VStack>
+                  </Center>
+                ) : popoverTransaction.length === 0 ? (
+                  <Center borderRadius={30} h="100%">
+                    <Text color="gray.400" fontWeight="bold">
+                      記録がありません
+                    </Text>
+                  </Center>
                 ) : (
-                  <Table.Root>
-                    {popoverTransaction.length === 0 ? (
-                      <Table.Body>
-                        <Table.Row>
-                          <Table.Cell>記録はありません</Table.Cell>
-                        </Table.Row>
-                      </Table.Body>
-                    ) : (
-                      <Table.Body>
+                  <ScrollArea.Root flex={1} p="0.5rem 1rem" variant="always">
+                    <ScrollArea.Viewport>
+                      <ScrollArea.Content>
                         {popoverTransaction.map((tx) => (
-                          <Table.Row key={tx.id}>
-                            <Table.Cell textAlign={"left"}>
-                              <Text
-                                textStyle={{ base: "xs", md: "md" }}
-                                fontWeight="medium"
+                          <Box>
+                            <Flex justify="space-between">
+                              <Box
+                                flex={1}
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                justifyContent="center"
+                                height="60px"
+                                maxW="30%"
+                                color={tx.memo ? "black" : "gray.400"}
                               >
-                                {(() => {
-                                  const category = categories.find(
-                                    (c) => c.id === tx.categoryId
-                                  );
-                                  if (!category) return "";
-                                  return category.is_deleted === true
-                                    ? `${tx.memo}（削除済み）`
-                                    : tx.memo;
-                                })()}
-                              </Text>
-                              <Text fontSize="xs" color="gray.500">
-                                {(() => {
-                                  const dayStr = new Date(
-                                    tx.date
-                                  ).toLocaleDateString("ja-JP");
-                                  return dayStr;
-                                })()}
-                              </Text>
-                            </Table.Cell>
-                            <Table.Cell>{tx.amount}円</Table.Cell>
-                            <Table.Cell textAlign={"right"}>
-                              <IconButton
-                                color="green"
-                                variant="ghost"
-                                onClick={() => handleEditClick(tx)}
+                                <Text
+                                  whiteSpace="normal"
+                                  wordBreak="break-word"
+                                >
+                                  {(() => {
+                                    const category = categories.find(
+                                      (c) => c.id === tx.categoryId,
+                                    );
+                                    if (!category) return "";
+                                    if (!tx.memo) return "メモがありません";
+                                    return category.is_deleted === true
+                                      ? `${tx.memo}（削除済み）`
+                                      : tx.memo;
+                                  })()}
+                                </Text>
+                              </Box>
+                              <Box
+                                flex={1}
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="flex-end"
+                                height="60px"
                               >
-                                <AiFillEdit />
-                              </IconButton>
+                                {tx.amount} 円
+                              </Box>
+                              <Box
+                                flex={1}
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="right"
+                                height="60px"
+                              >
+                                <IconButton
+                                  color="green"
+                                  variant="ghost"
+                                  onClick={() => handleEditClick(tx)}
+                                >
+                                  <AiFillEdit />
+                                </IconButton>
 
-                              <IconButton
-                                color="#F87171"
-                                variant="ghost"
-                                onClick={() => deleteTransactionOnList(tx.id)}
-                              >
-                                <AiFillDelete />
-                              </IconButton>
-                            </Table.Cell>
-                          </Table.Row>
+                                <IconButton
+                                  color="#F87171"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setDeleteTarget(tx);
+                                    setIsOpenDeleteAlert(true);
+                                  }}
+                                >
+                                  <AiFillDelete />
+                                </IconButton>
+                              </Box>
+                            </Flex>
+                            <Separator color="gray.300" />
+                          </Box>
                         ))}
-                      </Table.Body>
-                    )}
-                  </Table.Root>
+                      </ScrollArea.Content>
+                    </ScrollArea.Viewport>
+                    <ScrollArea.Scrollbar>
+                      <ScrollArea.Thumb />
+                    </ScrollArea.Scrollbar>
+                    <ScrollArea.Corner />
+                  </ScrollArea.Root>
                 )}
               </Dialog.Body>
             </Dialog.Content>
@@ -199,6 +248,16 @@ export default function MyPopover({
           formTitle="お金の記録を編集"
           submitButtonText="更新"
           loadingText="更新中..."
+        />
+      )}
+
+      {isOpenDeleteAlert && deleteTarget && (
+        <DeleteDialog
+          categories={categories}
+          deleteTarget={deleteTarget}
+          isOpenDeleteAlert={isOpenDeleteAlert}
+          setIsOpenDeleteAlert={setIsOpenDeleteAlert}
+          deleteTransaction={RefreshTable}
         />
       )}
     </>
